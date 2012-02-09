@@ -64,7 +64,7 @@ setmetatable (lib, { __index = function (_, k) return require (k) end })
 -- from the "replutils" module into the global namespace.
 --
 if chisel.interactive then
-	for k, v in pairs (require "replutils") do
+	for k, v in pairs (lib.replutils) do
 		if type (v) == "function" then
 			_G[k] = v
 		end
