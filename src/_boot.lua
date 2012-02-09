@@ -51,6 +51,14 @@ object =
 	end;
 }
 
+
+--
+-- Add some syntactic sugar for module loading, by means of a "lib"
+-- table, which will load modules using using require() as needed
+--
+lib = {}
+setmetatable (lib, { __index = function (_, k) return require (k) end })
+
 --
 -- When running in interactive mode, load some extra niceties
 -- from the "replutils" module into the global namespace.
