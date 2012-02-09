@@ -23,6 +23,10 @@ CUPS_LDLIBS  := $(shell cups-config --libs)
 CUPS_BINDIR  := $(shell cups-config --serverbin)
 endif
 
+ifeq ($(CHSL_CONFIG_READLINE),1)
+EXTRA_LDLIBS += -lreadline
+endif
+
 liblua_SRCS  := lapi.c lcode.c lctype.c ldebug.c ldo.c ldump.c lfunc.c  \
 	lgc.c llex.c lmem.c lobject.c lopcodes.c lparser.c lstate.c lstring.c \
 	ltable.c ltm.c lundump.c lvm.c lzio.c lauxlib.c lbaselib.c lbitlib.c  \
@@ -49,7 +53,7 @@ endif
 all: $(install_FILTERS)
 
 chisel: CFLAGS  += $(CUPS_CFLAGS)
-chisel: LDLIBS  += $(CUPS_LDLIBS)
+chisel: LDLIBS  += $(CUPS_LDLIBS) $(EXTRA_LDLIBS)
 chisel: LDFLAGS += $(CUPS_LDFLAGS)
 chisel: $(chisel_OBJS) $(liblua_OBJS)
 

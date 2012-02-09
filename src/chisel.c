@@ -17,11 +17,18 @@
 #include <assert.h>
 #include <stdio.h>
 
+#define CHSL_VERSION "0.1"
+
 #ifndef CHSL_LUA_LIBDIR
 #define CHSL_LUA_LIBDIR "src/"
 #endif /* !CHSL_LUA_LIBDIR */
 
-#define CHSL_VERSION "0.1"
+#ifndef CHSL_REPL_MAXINPUT
+#define CHSL_REPL_MAXINPUT 512
+#endif /* !CHSL_REPL_MAXINPUT */
+
+#define CHSL_REPL_PROMPT1 "(chisel) "
+#define CHSL_REPL_PROMPT2 "    ...) "
 
 #define HELP_TEXT \
     "Usage: %s [options]\n\n"                                        \
@@ -37,10 +44,31 @@
     "require \"_boot\""
 
 
+#ifdef CHSL_READLINE
+#include <readline/readline.h>
+#include <readline/history.h>
+#define repl_readline(L, b, p) \
+        ((void) L, ((b) = readline (p)) != NULL)
+#define repl_saveline(L, idx) \
+        if (lua_rawlen (L, idx) > 0)              /* non-empty line? */ \
+            add_history (lua_tostring (L, idx));  /* add it to history */
+#define repl_freeline(L, b) \
+        ((void)L, free(b))
+#else /* !CHSL_READLINE */
+#define repl_readline(L, b, p)     \
+        ((void) L, fputs (p, stdout), fflush(stdout), /* show prompt */ \
+        fgets (b, CHSL_LUA_MAXINPUT, stdin) != NULL)  /* get line */
+#define repl_saveline(L,idx) \
+        { (void) L; (void) idx; }
+#define repl_freeline(L,b) \
+        { (void) L; (void) b; }
+#endif /* CHSL_READLINE */
+
+
 static char *g_libdir = CHSL_LUA_LIBDIR;
 static char *g_script = NULL;
 static int   g_loglvl = 0;
-static int   g_cli    = 0;
+static int   g_repl   = 0;
 
 
 static int
@@ -55,7 +83,7 @@ chisel_lua_init (lua_State *L)
     lua_setfield   (L, -2, "version");
     lua_pushnumber (L, g_loglvl);
     lua_setfield   (L, -2, "loglevel");
-    lua_pushnumber (L, g_cli);
+    lua_pushnumber (L, g_repl);
     lua_setfield   (L, -2, "interactive");
     lua_setglobal  (L, "chisel");
 
@@ -63,6 +91,152 @@ chisel_lua_init (lua_State *L)
         return luaL_error (L, "Could not initialize chisel in '%s'", g_libdir);
 
     return 0;
+}
+
+
+/* mark in error messages for incomplete statements */
+#define REPL_EOFMARK "<eof>"
+#define repl_marklen (sizeof (REPL_EOFMARK) / sizeof(char) - 1)
+
+
+static int
+repl_incomplete (lua_State *L, int status)
+{
+    if (status == LUA_ERRSYNTAX) {
+        size_t lmsg;
+        const char *msg = lua_tolstring (L, -1, &lmsg);
+        if (lmsg >= repl_marklen && strcmp (msg + lmsg - repl_marklen, REPL_EOFMARK) == 0) {
+            lua_pop (L, 1);
+            return 1;
+        }
+    }
+    return 0; /* else... */
+}
+
+
+static int
+repl_traceback (lua_State *L)
+{
+    const char *msg = lua_tostring (L, 1);
+    if (msg)
+        luaL_traceback (L, L, msg, 1);
+    else if (!lua_isnoneornil (L, 1)) {  /* is there an error object? */
+        if (!luaL_callmeta (L, 1, "__tostring"))  /* try its 'tostring' metamethod */
+            lua_pushliteral (L, "(no error message)");
+    }
+    return 1;
+}
+
+
+static int
+repl_pushline (lua_State *L, int firstline)
+{
+    char buffer[CHSL_REPL_MAXINPUT];
+    char *b = buffer;
+    size_t l;
+
+    if (repl_readline (L, b, firstline ? CHSL_REPL_PROMPT1
+                                       : CHSL_REPL_PROMPT2) == 0)
+        return 0;  /* no input */
+
+    l = strlen (b);
+    if (l > 0 && b[l-1] == '\n')  /* line ends with newline? */
+        b[l-1] = '\0';  /* remove it */
+
+    /* Add a "return" to the first line, to print the result. */
+    if (firstline)
+        lua_pushfstring (L, "return %s", b);
+    else
+        lua_pushstring (L, b);
+
+    repl_freeline (L, b);
+    return 1;
+}
+
+
+
+static int
+repl_loadline (lua_State *L)
+{
+    int status;
+
+    assert (L);
+    lua_settop (L, 0);
+
+    if (!repl_pushline (L, 1))
+        return -1; /* no input */
+
+    for (;;) {     /* repeat until gets a complete line */
+        size_t l;
+        const char *line = lua_tolstring (L, 1, &l);
+        status = luaL_loadbuffer (L, line, l, "=stdin");
+
+        if (!repl_incomplete (L, status))
+            break; /* cannot try to add lines? */
+
+        if (!repl_pushline (L, 0)) /* no more input? */
+            return -1;
+
+        lua_pushliteral (L, "\n"); /* add a new line... */
+        lua_insert (L, -2); /* ...between the two lines */
+        lua_concat (L, 3);             /* and join them */
+    }
+    repl_saveline (L, 1);
+    lua_remove (L, 1);  /* remove line */
+    return status;
+}
+
+
+static int
+repl_docall (lua_State *L, int narg, int nres)
+{
+    int status;
+    int base = lua_gettop (L) - narg;      /* function index */
+    lua_pushcfunction (L, repl_traceback); /* push traceback function */
+    lua_insert (L, base);                  /* put it under chunk and args */
+
+    /* TODO Handle signals so Ctrl-C gets the user back to a prompt. */
+    status = lua_pcall (L, narg, nres, base);
+
+    lua_remove (L, base);                  /* remove traceback function */
+    return status;
+}
+
+
+
+static void
+repl (lua_State *L)
+{
+    int status;
+    while ((status = repl_loadline (L)) != -1) {
+        if (status == LUA_OK) {
+            status = repl_docall (L, 0, LUA_MULTRET);
+        }
+        if (status == LUA_OK && lua_gettop (L) > 0) {  /* any result to print? */
+            luaL_checkstack (L, LUA_MINSTACK, "too many results to print");
+            lua_getglobal (L, "print");
+            lua_insert (L, 1);
+            if (lua_pcall (L, lua_gettop (L) - 1, 0, 0) != LUA_OK) {
+                fprintf (stderr,
+                         "error calling \"print\" (%s)\n",
+                         lua_tostring (L, -1));
+                fflush (stderr);
+            }
+        }
+        if (status != LUA_OK) {
+            const char *msg = lua_tostring (L, -1);
+            if (msg == NULL)
+                msg = "(error object is not a string)";
+            fprintf (stderr, "%s\n", msg);
+            fflush (stderr);
+            lua_pop (L, 1);
+            /* Do a complete garbage collection cycle on error */
+            lua_gc (L, LUA_GCCOLLECT, 0);
+        }
+    }
+    lua_settop (L, 0);  /* clear stack */
+    putchar ('\n');
+    fflush (stdout);
 }
 
 
@@ -82,11 +256,15 @@ lua_main (lua_State *L)
     chisel_lua_init (L);
     lua_gc (L, LUA_GCRESTART, 0);
 
-    if (luaL_loadfile (L, g_cli ? NULL : g_script) != LUA_OK) {
-        lua_error (L);
+    if (g_repl) {
+        repl (L);
+    }
+    else {
+        if (luaL_loadfile (L, g_script) != LUA_OK)
+            lua_error (L);
+        lua_call (L, 0, 0);
     }
 
-    lua_call (L, 0, 0);
     return 0;
 }
 
@@ -138,7 +316,7 @@ main (int argc, char *argv[])
     while ((status = getopt (argc, argv, "viS:L:h")) != -1) {
         switch (status) {
             case 'i': /* Interactive interpreter. */
-                g_cli = 1;
+                g_repl = 1;
                 break;
 
             case 'v': /* Increase verbosity level. */
@@ -178,7 +356,7 @@ main (int argc, char *argv[])
     if (!g_script)
         g_script = argv[0];
 
-    if (!g_cli && find_script ()) {
+    if (!g_repl && find_script ()) {
         fprintf (stderr,
                  "%s: could not find script '%s', checked locations:\n"
                  "    - %s/%s.lua\n"
