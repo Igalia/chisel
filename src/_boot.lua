@@ -25,10 +25,11 @@ end
 verbose = function (...) _log(1, ...) end
 debug   = function (...) _log(2, ...) end
 
-verbose("chisel %s\n", chisel.version)
-debug(" - libdir = %q\n", chisel.libdir)
-debug(" - loglevel = %q\n", chisel.version)
-debug(" - interactive = %i\n", chisel.interactive)
+verbose ("chisel %s\n", chisel.version)
+debug   (" - libdir = %q\n", chisel.libdir)
+debug   (" - script = %q\n", chisel.script)
+debug   (" - loglevel = %q\n", chisel.version)
+debug   (" - interactive = %i\n", chisel.interactive)
 
 
 -- Really simple no-frill prototype-based object orientation

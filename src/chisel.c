@@ -95,6 +95,8 @@ chisel_lua_init (lua_State *L)
     lua_setfield   (L, -2, "libdir");
     lua_pushstring (L, CHSL_VERSION);
     lua_setfield   (L, -2, "version");
+    lua_pushstring (L, g_script);
+    lua_setfield   (L, -2, "script");
     lua_pushnumber (L, g_loglvl);
     lua_setfield   (L, -2, "loglevel");
     lua_pushnumber (L, g_repl);
