@@ -1,4 +1,3 @@
-#! /usr/bin/env lua
 --
 -- texttochisel.lua
 -- Copyright (C) 2012 Adrian Perez <aperez@igalia.com>

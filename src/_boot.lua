@@ -1,4 +1,3 @@
-#! /usr/bin/env lua
 --
 -- _boot.lua
 -- Copyright (C) 2012 Adrian Perez <aperez@igalia.com>
