@@ -50,3 +50,15 @@ object =
 		return self
 	end;
 }
+
+--
+-- When running in interactive mode, load some extra niceties
+-- from the "replutils" module into the global namespace.
+--
+if chisel.interactive then
+	for k, v in pairs (require "replutils") do
+		if type (v) == "function" then
+			_G[k] = v
+		end
+	end
+end
