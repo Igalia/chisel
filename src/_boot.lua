@@ -30,3 +30,22 @@ debug(" - libdir = %q\n", chisel.libdir)
 debug(" - loglevel = %q\n", chisel.version)
 debug(" - interactive = %i\n", chisel.interactive)
 
+
+-- Really simple no-frill prototype-based object orientation
+object =
+{
+	-- Objects can be cloned (and optionally extended)
+	clone = function (self, t)
+		local clone = {}
+		setmetatable(clone, { __index = self })
+		return t == nil and clone or clone:extend (t)
+	end;
+
+	-- Objects can be extended with the contents of another table
+	extend = function (self, t)
+		for k, v in pairs (t) do
+			self[k] = v
+		end
+		return self
+	end;
+}
