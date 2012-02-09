@@ -41,6 +41,7 @@ $(liblua_OBJS): CPPFLAGS += -DLUA_USE_POSIX
 chisel_SRCS  := $(wildcard src/*.c)
 chisel_OBJS  := $(patsubst %.c,%.o,$(chisel_SRCS))
 
+symlink_FILTERS      := texttochisel
 install_FILTERS      := chisel
 install_FILTERS_MODE := 755
 
@@ -50,7 +51,7 @@ else
 install_FILTERS_PATH := $(PREFIX)/lib/chisel
 endif
 
-all: $(install_FILTERS)
+all: $(install_FILTERS) link-filters
 
 chisel: CFLAGS  += $(CUPS_CFLAGS)
 chisel: LDLIBS  += $(CUPS_LDLIBS) $(EXTRA_LDLIBS)
@@ -59,6 +60,15 @@ chisel: $(chisel_OBJS) $(liblua_OBJS)
 
 # If the configuration changes, all object files should be rebuilt
 $(chisel_OBJS): Makefile.config
+
+$(symlink_FILTERS): link-filters
+.PHONY: link-filtes
+
+link-filters:
+	for i in $(symlink_FILTERS); do \
+		ln -sf chisel $$i ; \
+	done
+
 
 clean:
 	$(RM) $(chisel_OBJS)
