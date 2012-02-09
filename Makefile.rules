@@ -1,0 +1,68 @@
+# vim:ft=make
+#
+# Makefile.rules
+# Adrian Perez, 2011-12-24 19:45
+# Chisel is distributed under the terms of the GNU GPLv2 license.
+#
+#
+
+__verbose := 0
+
+ifeq ($(origin V),command line)
+  ifneq ($V,0)
+    __verbose := 1
+  endif
+endif
+
+ifeq ($(__verbose),0)
+  MAKEFLAGS += Rrs
+  define cmd_print
+    @printf " %-10s %s\n"
+  endef
+	devnull := > /dev/null
+else
+  MAKEFLAGS += Rr
+  define cmd_print
+    @:
+  endef
+endif
+
+PREFIX ?= /usr/local
+
+# $(eval $(call install-target,NAME))
+#
+# Generates Makefile rules for install sub-targets, use it like this:
+#
+#   install_NAME = file1 file2 ... fileN
+#   install_NAME_PATH = /path/to/dir
+#   install_NAME_MODE = 644
+#   install_NAME_DIR_MODE = 755
+#   $(eval $(call install-target,NAME))
+#
+define install-target
+install-$1: $$(install_$1)
+	$(cmd_print) INSTALL $$^
+	install -m $$(or $$(install_$1_DIR_MODE),$$(install_DIR_MODE),755) \
+		-d $$(DESTDIR)$$(install_$1_PATH)
+	install -m $$(or $$(install_$1_MODE),$$(install_MODE),644) \
+		$$(install_$1) $$(DESTDIR)$$(install_$1_PATH)
+install: install-$1
+.PHONY: install-$1
+endef
+
+%.o: %.c
+	$(cmd_print) CC $@
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+
+%:
+	$(cmd_print) LD $@
+	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+all:
+
+clean: clean-info
+
+clean-info:
+	$(cmd_print) CLEAN
+
+.PHONY: clean clean-info all install
