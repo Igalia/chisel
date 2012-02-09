@@ -143,8 +143,11 @@ repl_pushline (lua_State *L, int firstline)
     if (l > 0 && b[l-1] == '\n')  /* line ends with newline? */
         b[l-1] = '\0';  /* remove it */
 
-    /* Add a "return" to the first line, to print the result. */
-    if (firstline)
+    /*
+     * Add a "return" to the first line, to print the result, but only if
+     * it is not already there, and the statement is not an assignment.
+     */
+    if (firstline && strncmp (b, "return", 6) && !strchr (b, '='))
         lua_pushfstring (L, "return %s", b);
     else
         lua_pushstring (L, b);
