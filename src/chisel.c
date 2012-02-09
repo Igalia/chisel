@@ -72,6 +72,20 @@ static int   g_repl   = 0;
 
 
 static int
+traceback (lua_State *L)
+{
+    const char *msg = lua_tostring (L, 1);
+    if (msg)
+        luaL_traceback (L, L, msg, 1);
+    else if (!lua_isnoneornil (L, 1)) {  /* is there an error object? */
+        if (!luaL_callmeta (L, 1, "__tostring"))  /* try its 'tostring' metamethod */
+            lua_pushliteral (L, "(no error message)");
+    }
+    return 1;
+}
+
+
+static int
 chisel_lua_init (lua_State *L)
 {
     assert (L);
@@ -87,9 +101,14 @@ chisel_lua_init (lua_State *L)
     lua_setfield   (L, -2, "interactive");
     lua_setglobal  (L, "chisel");
 
-    if (luaL_dostring (L, BOOT_SCRIPT))
-        return luaL_error (L, "Could not initialize chisel in '%s'", g_libdir);
+    lua_pushcfunction (L, traceback);
+    if (luaL_loadstring (L, BOOT_SCRIPT) != LUA_OK)
+        return luaL_error (L, "Could not compile boot code");
+    if (lua_pcall (L, 0, 0, -2) != LUA_OK)
+        return luaL_error (L, "Could not initialize, libdir = '%s'\n%s",
+                           g_libdir, lua_tostring (L, -1));
 
+    lua_pop (L, 1);
     return 0;
 }
 
@@ -111,20 +130,6 @@ repl_incomplete (lua_State *L, int status)
         }
     }
     return 0; /* else... */
-}
-
-
-static int
-repl_traceback (lua_State *L)
-{
-    const char *msg = lua_tostring (L, 1);
-    if (msg)
-        luaL_traceback (L, L, msg, 1);
-    else if (!lua_isnoneornil (L, 1)) {  /* is there an error object? */
-        if (!luaL_callmeta (L, 1, "__tostring"))  /* try its 'tostring' metamethod */
-            lua_pushliteral (L, "(no error message)");
-    }
-    return 1;
 }
 
 
@@ -195,7 +200,7 @@ repl_docall (lua_State *L, int narg, int nres)
 {
     int status;
     int base = lua_gettop (L) - narg;      /* function index */
-    lua_pushcfunction (L, repl_traceback); /* push traceback function */
+    lua_pushcfunction (L, traceback);      /* push traceback function */
     lua_insert (L, base);                  /* put it under chunk and args */
 
     /* TODO Handle signals so Ctrl-C gets the user back to a prompt. */
