@@ -256,11 +256,11 @@ lua_main (lua_State *L)
     chisel_lua_init (L);
     lua_gc (L, LUA_GCRESTART, 0);
 
-    if (g_repl) {
+    if (g_repl && isatty (STDIN_FILENO)) {
         repl (L);
     }
     else {
-        if (luaL_loadfile (L, g_script) != LUA_OK)
+        if (luaL_loadfile (L, g_repl ? NULL : g_script) != LUA_OK)
             lua_error (L);
         lua_call (L, 0, 0);
     }
