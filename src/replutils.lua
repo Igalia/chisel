@@ -1,15 +1,17 @@
+---
+-- Utilities for the interactive REPL mode of Chisel.
 --
--- replutils.lua
--- Copyright (C) 2012 Adrian Perez <aperez@igalia.com>
---
--- Distributed under terms of the MIT license.
+-- @copyright 2012 Adrian Perez <aperez@igalia.com>
+-- @license Distributed under terms of the MIT license.
 --
 
 local M = {}
 
 
+--- Returns a list with all the keys contained in a table.
 --
--- dir(t): Returns a table with all the keys of a table.
+-- @param t A table.
+-- @return Table-list.
 --
 function M.dir (t)
 	local result = {}
@@ -50,10 +52,12 @@ function pprint.table (t)
 	return result .. "}"
 end
 
+--- Pretty print the given value.
 --
--- pprint(v): Pretty-print the given value. Returns a string with
--- a representation of the argument which is suitable for displaying
--- to the user. Do *not* use this as a serialization function.
+-- @param v Value to be pretty-printed.
+-- @return String with a representation of the argument, which is suitable
+-- for displaying to the user. Do <em>not</em> use this function for
+-- object serializtion!
 --
 function M.pprint (v)
 	return (pprint[type (v)] or tostring) (v)

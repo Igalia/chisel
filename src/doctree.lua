@@ -1,40 +1,50 @@
+---
+-- Document tree.
 --
--- doctree.lua
--- Copyright (C) 2012 Adrian Perez <aperez@igalia.com>
+-- @todo Describe what the document tree is for.
 --
--- Distributed under terms of the MIT license.
+-- @copyright 2012 Adrian Perez <aperez@igalia.com>
+-- @license Distributed under terms of the MIT license.
 --
 
 local M = {}
 
 
+--- Base document tree element.
 --
--- Base doctument tree element.
+-- @section element
 --
 M.element = object:clone
 {
 	-- Arbitrary data payload. Usage depends on the subclass.
-	--
 	data = "";
 
-	-- Renders an element to a given output device. Note that the base class
-	-- does not implement it and will raise an error.
+	--- Renders an element to a given output device.
 	--
-	render = function (self, dev)
+	-- Note that the base class does not implement it and will raise an error.
+	--
+	-- @param device Output @{device}.
+	-- @name element:render
+	--
+	render = function (self, device)
 		error ("unimplemented")
 	end;
 
-	-- Checks whether the node has children.
+	--- Checks whether the node has children.
+	--
+	-- @name element:has_children
 	--
 	has_children = function (self)
 		return self.children and #self.children > 0
 	end;
 
-	-- Appends (or inserts at a given position) a node as a new child.
-	-- The interpretation of the arguments (position, etc) is the same
-	-- as for table.insert()
+	--- Appends (or inserts at a given position) a node as a new child.
 	--
-	-- The node itself is returned, to allow chaining operations.
+	-- The interpretation of the arguments (position, etc) is the same
+	-- as for @{table.insert}.
+	--
+	-- @return The element itself, to allow chain-calls.
+	-- @name element:add_child
 	--
 	add_child = function (self, ...)
 		if self.children == nil then
@@ -44,52 +54,78 @@ M.element = object:clone
 		return self
 	end;
 
-	-- Helper function to walk a node, which calls an "enter function",
-	-- then calls :render() for each child (if any), and finally calls
-	-- and an "exit function" on the output device.
+	--- Walk over a node.
 	--
-	-- For most cases, the :render() method for elements will just
-	-- arrange to call :walk() with suitable parameters.
+	-- Helper function to walk a node, which calls an *enter function*,
+	-- then calls @{element:render} for each child (if any), and finally
+	-- calls and an *exit function* on the output device:
 	--
-	walk = function (self, nodename, dev)
-		local beginf = dev["begin_" .. nodename]
-		local endf   = dev["end_"   .. nodename]
+	--  * The *enter function* has to be called
+	--    <code>begin_<em>name</em></code>.
+	--  * The *exit function* has to be called
+	--    <code>end_<em>name</em></code>.
+	--
+	-- For most cases, the @{element:render} method for elements will
+	-- just arrange to call @{element:walk} with suitable parameters.
+	--
+	-- @param name Name used as suffix to derive the names of the
+	-- enter and exit function in the output device.
+	-- @param device Output device.
+	-- @name element:walk
+	--
+	walk = function (self, name, device)
+		local beginf = device["begin_" .. name]
+		local endf   = device["end_"   .. name]
 
 		if beginf ~= nil then
-			beginf (dev, self)
+			beginf (device, self)
 		end
 
 		if self:has_children () then
 			for _, child in ipairs (self.children) do
-				child:render (dev)
+				child:render (device)
 			end
 		end
 
 		if endf ~= nil then
-			endf (dev, self)
+			endf (device, self)
 		end
 	end;
 }
 
 
+--- Top-level document element.
 --
--- Top-level document element.
+-- The document element represent a complete document and its attributes.
+-- It *must* always be the top-level element in the document tree.
+--
+-- @section document
 --
 M.document = M.element:clone
 {
-	render = function (self, dev)
-		self:walk ("document", dev)
+	--- Renders a document.
+	-- @param device Output @{device}.
+	-- @name document:render
+	render = function (self, device)
+		self:walk ("document", device)
 	end;
 }
 
 
+--- Text element.
 --
--- Text element. Contains a blob of plain text as data payload.
+-- Contains a blob of plain text as data payload. The payload is stored in
+-- the `data` attribute.
+--
+-- @section text
 --
 M.text = M.element:clone
 {
-	render = function (self, dev)
-		self:walk ("text", dev)
+	--- Renders text.
+	-- @param device Output @{device}.
+	-- @name text:render
+	render = function (self, device)
+		self:walk ("text", device)
 	end;
 }
 

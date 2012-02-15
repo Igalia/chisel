@@ -1,8 +1,11 @@
+---
+-- Chisel "boot" module containing builtins and common startup code.
 --
--- _boot.lua
--- Copyright (C) 2012 Adrian Perez <aperez@igalia.com>
+-- Functionality defined in this module is available in the global
+-- environment automatically.
 --
--- Distributed under terms of the MIT license.
+-- @copyright 2012 Adrian Perez <aperez@igalia.com>
+-- @license Distributed under terms of the MIT license.
 --
 
 local str  = require "string"
@@ -21,8 +24,26 @@ local function _log(level, format, ...)
 	end
 end
 
-verbose = function (...) _log(1, ...) end
-debug   = function (...) _log(2, ...) end
+--- Send a verbose message to stderr.
+--
+-- Formats a message string, and sends it to the standard error output, but
+-- only if `chisel.loglevel` is non-zero.
+--
+-- @param format Format string.
+-- @param ... Format string arguments.
+--
+verbose = function (format, ...) _log(1, format, ...) end
+
+--- Send a debug message to stderr.
+--
+-- Formats a message string, and sends it to the standard error output, but
+-- only if `chisel.loglevel` is above `1`.
+--
+-- @param format Format string.
+-- @param ... Format string arguments.
+--
+debug = function (format, ...) _log(2, format, ...) end
+
 
 verbose ("chisel %s\n", chisel.version)
 debug   (" - libdir = %q\n", chisel.libdir)
@@ -50,10 +71,19 @@ object =
 	end;
 }
 
-
+--- Module auto-import
 --
--- Add some syntactic sugar for module loading, by means of a "lib"
--- table, which will load modules using using require() as needed
+-- @section auto_import
+--
+
+--- Automatic module importing.
+--
+-- Indexing the `lib` table will auto-load modules. This provides
+-- the needed syntactic sugar to be able to write:
+--
+-- 	local mymodule = lib.mymodule
+--
+-- The built-in @{require} Lua function is used for loading modules.
 --
 lib = {}
 setmetatable (lib, { __index = function (_, k) return require (k) end })

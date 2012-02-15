@@ -1,17 +1,21 @@
+---
+-- Character set constants
 --
--- charset.lua
--- Copyright (C) 2012 Adrian Perez <aperez@igalia.com>
---
--- Distributed under terms of the MIT license.
+-- @copyright 2012 Adrian Perez <aperez@igalia.com>
+-- @license Distributed under terms of the MIT license.
 --
 
+--- Character set constants
+--
+-- @table charset
+--
 local M = {
-	NUL = "\x00";
-	LF  = "\x0A";
-	FF  = "\x0C";
-	CR  = "\x0D";
-	ESC = "\x1B";
-	SPC = "\x20";
+	NUL = "\x00"; -- ASCII null character.
+	LF  = "\x0A"; -- ASCII line feed character.
+	FF  = "\x0C"; -- ASCII form feed character.
+	CR  = "\x0D"; -- ASCII carriage return character.
+	ESC = "\x1B"; -- ASCII escape character.
+	SPC = "\x20"; -- ASCII space character.
 }
 
 return M

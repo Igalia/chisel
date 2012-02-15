@@ -1,8 +1,13 @@
+---
+-- Document loader.
 --
--- loader.lua
--- Copyright (C) 2012 Adrian Perez <aperez@igalia.com>
+-- Provides functions to load document trees from an external representation
+-- of it. The external representation is a small Lua-derived DSL that runs
+-- in a sandboxed environment where only the functions needed to describe
+-- a document are provided.
 --
--- Distributed under terms of the MIT license.
+-- @copyright 2012 Adrian Perez <aperez@igalia.com>
+-- @license Distributed under terms of the MIT license.
 --
 
 local T = lib.doctree
@@ -22,6 +27,11 @@ function doc_funcs.document (t)
 end
 
 
+--- Parses an input string into a document tree.
+--
+-- @param input Input string.
+-- @return Document tree.
+--
 function M.parsestring (input)
 	local env = {}
 	setmetatable (env, { __index = doc_funcs })
@@ -33,6 +43,12 @@ function M.parsestring (input)
 end
 
 
+--- Parses an input file into a document tree.
+--
+-- @param input Path to input file. When omitted (or `nil`), data is read
+-- from the standard input stream.
+-- @return Document tree.
+--
 function M.parse (input)
 	local env = {}
 	setmetatable (env, { __index = doc_funcs })

@@ -6,14 +6,31 @@
 --
 
 local cset = lib.charset
+
+--- Output device for Index Braille devices using the V4 protocol
+--
+-- @class table
+-- @name ibv4
+--
 local ibv4 = lib.device:clone ()
 
--- Output device information
+--- Device name.
 ibv4.name = "indexbraille-v4"
+
+--- Device description.
 ibv4.description = [[\
 Output to Index Braille embossers using version 4 of the protocol.
 ]]
 
+--- Sends data inside an escape sequence.
+--
+-- Escape sequences are made by an ASCII escape character, a sequence of
+-- a command and its arguments, and a semicolon used for terminating the
+-- escape sequence.
+--
+-- @param ... Format string and its argument. Those are passed as-is
+--            to <tt>device:format()</tt>.
+--
 function ibv4:esc (...)
 	self:write (cset.ESC)
 	self:format (...)
