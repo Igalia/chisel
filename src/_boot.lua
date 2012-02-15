@@ -52,24 +52,105 @@ debug   (" - loglevel = %q\n", chisel.version)
 debug   (" - interactive = %i\n", chisel.interactive)
 
 
--- Really simple no-frill prototype-based object orientation
-object =
-{
-	-- Objects can be cloned (and optionally extended)
-	clone = function (self, t)
-		local clone = {}
-		setmetatable(clone, { __index = self })
-		return t == nil and clone or clone:extend (t)
-	end;
+--- Base object.
+--
+-- Chisel provides a simple base `object` class that supports a
+-- simple, prototype-based, single-inheritance object system. It
+-- is kept intentionally small. As the system is prototype-based,
+-- there is no *classes* as such, just objects were cloned from
+-- other objects.
+--
+-- A typical example on how to use the system would be:
+--
+-- 	animal = object:clone {
+--		what = function (self)
+--			return "This is " .. self.name
+--		end;
+--	}
+--	cat = animal:clone {
+--		what = function (self)
+--			return "Meoooww! - Me iz " .. self.name
+--		end;
+--	}
+--	peter = animal:clone { name = "Peter" }
+--	roger = cat:clone { name = "Roger" }
+--	print(peter:what())
+--	print(roger:what())
+--
+-- Apart from cloning objects, they can also be *augmented* by
+-- using @{object:extend}, and inspected using @{object:prototype}
+-- and @{object:derives}.
+--
+-- @section object
+--
+object = {}
 
-	-- Objects can be extended with the contents of another table
-	extend = function (self, t)
-		for k, v in pairs (t) do
-			self[k] = v
+--- Clones an object.
+--
+-- Clones an object, returning a new one. The returned object will look
+-- up missing attributes in the table in which `clone()` was called.
+-- Optionally, a table from which to pick additional attributes can
+-- be passed (n.b. it is equivalent to call @{object:extend} on the
+-- returned object).
+--
+-- @param t Table with additional attributes (optional).
+-- @return New cloned object.
+--
+function object:clone (t)
+	local clone = {}
+	setmetatable(clone, { __index = self })
+	return t == nil and clone or clone:extend (t)
+end
+
+--- Extends an object with the content of another object or table.
+--
+-- Copies all the *(key, value)* pairs from the passed table to the
+-- object. Note that only a shallow copy is done.
+--
+-- @param t Table from where to copy elements.
+-- @return The object itself, to allow chained calls.
+--
+function object:extend (t)
+	for k, v in pairs (t) do
+		self[k] = v
+	end
+	return self
+end
+
+--- Gets the prototype of an object.
+--
+-- The prototype is the base object from which the object was cloned.
+-- @return A table (the prototype) or `nil` (for the base object).
+--
+function object:prototype ()
+	local meta = getmetatable (self)
+	return meta and meta.__index
+end
+
+--- Checks whether an object is derived from some other object.
+--
+-- **Note** that this function will traverse the object prototype
+-- chain recursively, so it may be slow.
+--
+-- @param obj Reference object.
+-- @return Whether the object derives from the reference object.
+--
+function object:derives (obj)
+	local meta = getmetatable (self)
+	while true do
+		-- No metatable, or no __index, means it's the base object
+		if not (meta and meta.__index) then
+			return false
 		end
-		return self
-	end;
-}
+		-- Yup, this is derived
+		if meta.__index == obj then
+			return true
+		end
+		-- Climb up in the hierarchy
+		meta = getmetatable (meta.__index)
+	end
+end
+
 
 --- Module auto-import
 --
