@@ -31,12 +31,13 @@
 #define CHSL_REPL_PROMPT2 "    ...) "
 
 #define HELP_TEXT \
-    "Usage: %s [options]\n\n"                                        \
+    "Usage: %s [flags] [option1=value1 ... [optionN=valueN]]\n\n"    \
+    "Available command line flags:\n\n"                              \
     "   -L PATH   Set library path (default: " CHSL_LUA_LIBDIR ")\n" \
     "   -S NAME   Script to run (default: same as program name)\n"   \
     "   -v        Be verbose. Use twice for debugging output\n"      \
-    "   -i        Run an interactive Lua interpreter.\n"             \
-    "\n"
+    "   -i        Run an interactive Lua interpreter.\n\n"           \
+    "Useable options vary depending on the script being run.\n\n"
 
 #define BOOT_SCRIPT \
     "package.cpath = \"\"\n" \
@@ -86,11 +87,12 @@ traceback (lua_State *L)
 
 
 static int
-chisel_lua_init (lua_State *L)
+chisel_lua_init (lua_State *L, int argc, char **argv)
 {
     assert (L);
     lua_newtable (L);
 
+    /* Set some fields... */
     lua_pushstring (L, g_libdir);
     lua_setfield   (L, -2, "libdir");
     lua_pushstring (L, CHSL_VERSION);
@@ -101,6 +103,24 @@ chisel_lua_init (lua_State *L)
     lua_setfield   (L, -2, "loglevel");
     lua_pushnumber (L, g_repl);
     lua_setfield   (L, -2, "interactive");
+
+    /* Set the "options" table */
+    lua_newtable   (L);
+    for (; argc-- ; argv++) {
+        char *chr = strchr (*argv, '=');
+        if (chr == NULL) {
+            lua_pushboolean (L, 1);
+            lua_setfield    (L, -2, *argv);
+        }
+        else {
+            lua_pushlstring (L, *argv, chr - *argv);
+            lua_pushstring  (L, chr + 1);
+            lua_settable    (L, -3);
+        }
+    }
+    lua_setfield   (L, -2, "options");
+
+    /* Set the global "chisel" table */
     lua_setglobal  (L, "chisel");
 
     lua_pushcfunction (L, traceback);
@@ -256,14 +276,11 @@ lua_main (lua_State *L)
     int    argc = (int)    lua_tointeger (L, 1);
     char **argv = (char**) lua_touserdata (L, 2);
 
-    (void) argc;
-    (void) argv;
-
     /* Open libraries, pausing the collector during initialization */
     luaL_checkversion (L);
     lua_gc (L, LUA_GCSTOP, 0);
     luaL_openlibs (L);
-    chisel_lua_init (L);
+    chisel_lua_init (L, argc, argv);
     lua_gc (L, LUA_GCRESTART, 0);
 
     if (g_repl && isatty (STDIN_FILENO)) {
@@ -321,6 +338,7 @@ int
 main (int argc, char *argv[])
 {
     lua_State *L = NULL;
+    size_t consumed = 0;
     int status;
 
     while ((status = getopt (argc, argv, "viS:L:h")) != -1) {
@@ -361,6 +379,7 @@ main (int argc, char *argv[])
                          argv[optind]);
                 exit (EXIT_FAILURE);
         }
+        consumed++;
     }
 
     if (!g_script)
@@ -386,10 +405,13 @@ main (int argc, char *argv[])
         exit (EXIT_FAILURE);
     }
 
-    /* Push arguments, and do a protected call to lua_main above */
+    /*
+     * Push remanining option arguments, and do a protected call to
+     * lua_main above, which will add them to the Lua environment.
+     */
     lua_pushcfunction (L, lua_main);
-    lua_pushinteger (L, argc);
-    lua_pushlightuserdata (L, argv);
+    lua_pushinteger (L, argc - consumed + 1);
+    lua_pushlightuserdata (L, argv + consumed - 1);
 
     if ((status = lua_pcall(L, 2, 0, 0)) != LUA_OK) {
         const char *msg = (lua_type (L, -1) == LUA_TSTRING) ? lua_tostring (L, -1)
