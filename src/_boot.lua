@@ -60,6 +60,9 @@ debug   (" - interactive = %i\n", chisel.interactive)
 -- there is no *classes* as such, just objects were cloned from
 -- other objects.
 --
+-- If an object has an `_init` method, it will be called on cloned
+-- objects by @{object:clone}.
+--
 -- A typical example on how to use the system would be:
 --
 -- 	animal = object:clone {
@@ -93,13 +96,22 @@ object = {}
 -- be passed (n.b. it is equivalent to call @{object:extend} on the
 -- returned object).
 --
+-- If the base object (or one of the bases in the hierarchy) has an
+-- `_init` method, it will be called on the new (cloned) object.
+--
 -- @param t Table with additional attributes (optional).
 -- @return New cloned object.
 --
 function object:clone (t)
 	local clone = {}
 	setmetatable(clone, { __index = self })
-	return t == nil and clone or clone:extend (t)
+	if type (t) == "table" then
+		clone:extend (t)
+	end
+	if clone._init then
+		clone:_init ()
+	end
+	return clone
 end
 
 --- Extends an object with the content of another object or table.
