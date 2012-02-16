@@ -197,6 +197,32 @@ local printerdata = object:clone
 		return self
 	end;
 
+	_init_option_pagesize = function (self, ps)
+		if type (ps) ~= "table" then
+			error ("Page sizes must be a table/list")
+		end
+		local vals = {}
+		for k, v in pairs (ps) do
+			if type (k) == "number" then
+				-- Numeric index, pick element from builtin page sizes
+				if builtin_pagesizes[v] == nil then
+					error ("Unknown builtin page size '" .. v .. "'")
+				end
+				debug (" adding builting pagesize %s\n", v)
+				vals[v] = builtin_pagesizes[v]
+			else
+				-- Pick value as-is
+				debug (" adding pagesize %s (%s)\n", k, v)
+				vals[k] = v
+			end
+		end
+
+		local defval = vals.default
+		vals.default = nil
+
+		return option_class.pagesize:clone { values = vals, default = defval }
+	end;
+
 	--- Generates PPD data.
 	--
 	-- @return String wiht the contents of the PPD.
