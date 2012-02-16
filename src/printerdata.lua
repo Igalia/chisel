@@ -148,6 +148,16 @@ local printeroption = object:clone
 }
 
 
+local builtin_pagesizes =
+{
+	A3     = "A3";
+	A4     = "A4";
+	A5     = "A5";
+	Legal  = "US Legal";
+	Letter = "US Letter";
+}
+
+
 local option_class =
 {
 	pagesize = printeroption:clone
