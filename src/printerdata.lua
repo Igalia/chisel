@@ -170,6 +170,19 @@ local option_class =
 }
 
 
+local function _printerdata_get (name)
+	local base = {}
+	local data = require ("data/" .. name)
+	if data.base then
+		base = _printerdata_get (data.base)
+	end
+	for k, v in pairs (data) do
+		base[k] = v
+	end
+	return base
+end
+
+
 --- Printer data base class.
 --
 -- The `printerdata` is a base class used to describe printers and similar
@@ -240,57 +253,17 @@ local printerdata = object:clone
 		end
 		return tconcat (result, "\n")
 	end;
-
-	--- Obtain the data for a device given its name.
-	--
-	-- @param name Device name in `manufacturer/model` form.
-	-- @name printerdata.get
-	--
-	get = function (name)
-		return require("data/" .. name)
-	end;
-
-	--- Create a new device description by extending another.
-	--
-	-- To create a device description from scratch, do:
-	--
-	-- 	return lib.printerdata:extend {
-	--		manufacturer = "ACME";
-	--		model = "Print-O-Matic";
-	--		-- ...
-	-- 	}
-	--
-	-- To extend an existing `acme/print-o-matic` device with additional
-	-- information, do:
-	--
-	-- 	return lib.printerdata:extend "acme/print-o-matic" {
-	--		model = "Print-O-Matic Extended";
-	--		-- ...
-	--	}
-	--
-	-- @param arg Device description to extend, as a `manufacturer/model`
-	-- string. If no argument (or `nil`) is given, a new device description
-	-- is created without extending an existing one.
-	--
-	-- @return When a string is passed, a function that accepts a table
-	-- as single argument and returns a new object is returned. When no
-	-- arguments are passed, this is equivalent to clone the base object
-	-- and extend it.
-	--
-	-- @name printerdata:extend
-	--
-	extend = function (self, arg)
-		if type (arg) == "string" then
-			local base = require("data/" .. arg)
-			return function (t)
-				return base:clone (t)
-			end
-		else
-			return object.extend (self:clone (), arg)
-		end
-	end;
 }
 
 
-return printerdata
+--- Obtain the data for a device given its name.
+--
+-- @param name Device name in `manufacturer/model` form.
+-- @name printerdata.get
+--
+function printerdata.get (name)
+	return printerdata:clone (_printerdata_get (name))
+end;
 
+
+return printerdata
