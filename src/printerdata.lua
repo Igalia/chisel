@@ -182,6 +182,21 @@ local option_class =
 --
 local printerdata = object:clone
 {
+	_init = function (self)
+		debug ("printerdata:_init: %s/%s\n", self.manufacturer, self.model)
+		if not self.options then
+			return
+		end
+		for k, v in pairs (self.options) do
+			local opt_init_func = self["_init_option_" .. k]
+			debug ("printerdata:_init_option_%s: %s\n", k, opt_init_func)
+			if opt_init_func then
+				self.options[k] = opt_init_func (self, v)
+			end
+		end
+		return self
+	end;
+
 	--- Generates PPD data.
 	--
 	-- @return String wiht the contents of the PPD.
