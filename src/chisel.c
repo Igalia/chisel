@@ -89,8 +89,11 @@ traceback (lua_State *L)
 static int
 chisel_lua_init (lua_State *L, int argc, char **argv)
 {
+    long idx;
+
     assert (L);
-    lua_newtable (L);
+
+    lua_newtable (L); /*: M */
 
     /* Set some fields... */
     lua_pushstring (L, g_libdir);
@@ -104,24 +107,30 @@ chisel_lua_init (lua_State *L, int argc, char **argv)
     lua_pushnumber (L, g_repl);
     lua_setfield   (L, -2, "interactive");
 
-    /* Set the "options" table */
-    lua_newtable   (L);
-    for (; argc-- ; argv++) {
+    /* Set the "argv" and "options" tables */
+    lua_newtable (L); /*: M argv */
+    lua_newtable (L); /*: M argv options */
+
+    for (idx = 1; argc-- ; argv++, idx++) {
+        lua_pushstring (L, *argv);   /*: M argv options "*argv" */
+        lua_rawseti    (L, -3, idx); /*: M argv options */
+
         char *chr = strchr (*argv, '=');
         if (chr == NULL) {
-            lua_pushboolean (L, 1);
-            lua_setfield    (L, -2, *argv);
+            lua_pushboolean (L, 1);         /*: M argv options true */
+            lua_setfield    (L, -2, *argv); /*: M argv options */
         }
         else {
-            lua_pushlstring (L, *argv, chr - *argv);
-            lua_pushstring  (L, chr + 1);
-            lua_settable    (L, -3);
+            lua_pushlstring (L, *argv, chr - *argv); /*: M argv options k */
+            lua_pushstring  (L, chr + 1);            /*: M argv options k v */
+            lua_settable    (L, -3);                 /*: M argv options */
         }
     }
-    lua_setfield   (L, -2, "options");
+    lua_setfield (L, -3, "options"); /*: M argv */
+    lua_setfield (L, -2, "argv");    /*: M */
 
     /* Set the global "chisel" table */
-    lua_setglobal  (L, "chisel");
+    lua_setglobal (L, "chisel");     /*: - */
 
     lua_pushcfunction (L, traceback);
     if (luaL_loadstring (L, BOOT_SCRIPT) != LUA_OK)
