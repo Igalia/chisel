@@ -37,11 +37,10 @@ liblua_OBJS  := $(patsubst %.c,lua/%.o,$(liblua_SRCS))
 # We want the extras that Lua can use from Unix-like systems
 $(liblua_OBJS): CPPFLAGS += -DLUA_USE_POSIX
 
-
 chisel_SRCS  := $(wildcard src/*.c)
 chisel_OBJS  := $(patsubst %.c,%.o,$(chisel_SRCS))
 
-symlink_FILTERS      := texttochisel
+symlink_FILTERS      := chisel-ppd texttochisel
 install_FILTERS      := chisel
 install_FILTERS_MODE := 755
 
