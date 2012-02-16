@@ -270,6 +270,10 @@ repl (lua_State *L)
 }
 
 
+/* Additional, chisel-provided Lua libraries */
+extern int lua_fs_open (lua_State*);
+
+
 static int
 lua_main (lua_State *L)
 {
@@ -281,6 +285,7 @@ lua_main (lua_State *L)
     lua_gc (L, LUA_GCSTOP, 0);
     luaL_openlibs (L);
     chisel_lua_init (L, argc, argv);
+    luaL_requiref (L, "fs", lua_fs_open, 1);
     lua_gc (L, LUA_GCRESTART, 0);
 
     if (g_repl && isatty (STDIN_FILENO)) {
