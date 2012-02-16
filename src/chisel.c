@@ -343,7 +343,6 @@ int
 main (int argc, char *argv[])
 {
     lua_State *L = NULL;
-    size_t consumed = 1;
     int status;
 
     while ((status = getopt (argc, argv, "viS:L:h")) != -1) {
@@ -384,7 +383,6 @@ main (int argc, char *argv[])
                          argv[optind]);
                 exit (EXIT_FAILURE);
         }
-        consumed++;
     }
 
     if (!g_script)
@@ -415,8 +413,8 @@ main (int argc, char *argv[])
      * lua_main above, which will add them to the Lua environment.
      */
     lua_pushcfunction (L, lua_main);
-    lua_pushinteger (L, argc - consumed);
-    lua_pushlightuserdata (L, argv + consumed);
+    lua_pushinteger (L, argc - optind);
+    lua_pushlightuserdata (L, argv + optind);
 
     if ((status = lua_pcall(L, 2, 0, 0)) != LUA_OK) {
         const char *msg = (lua_type (L, -1) == LUA_TSTRING) ? lua_tostring (L, -1)
