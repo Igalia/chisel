@@ -32,11 +32,6 @@ local function ppd_attribute (ppdname, attrname, optional)
 end
 
 
-local function ppd_template_options (data)
-	return "" -- TODO
-end
-
-
 -- Template for generated PPD files:
 --
 --	* Strings are emitted as-is, followed by a newline character.
@@ -96,7 +91,20 @@ local ppd_template = {
 	end;
 
 	-- Generate options. This deserves a separate function...
-	ppd_template_options;
+	function (data)
+		if not data.options then
+			return "*% No options defined"
+		end
+
+		local result = {}
+		for k, opt in pairs (data.options) do
+			debug ("%s, %s, %s\n", k, opt, opt.ppd)
+			tinsert (result, sprintf ("\n*%% options.%s", k))
+			tinsert (result, opt:ppd ())
+		end
+
+		return tconcat (result, "\n")
+	end;
 }
 
 
