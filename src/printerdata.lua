@@ -15,6 +15,7 @@ local tconcat  = table.concat
 local tinsert  = table.insert
 local tostring = tostring
 local ipairs   = ipairs
+local pairs    = pairs
 local type     = type
 
 
@@ -96,6 +97,66 @@ local ppd_template = {
 
 	-- Generate options. This deserves a separate function...
 	ppd_template_options;
+}
+
+
+--- Printer option.
+--
+-- Describes a printer option. The following attributes can (and should) be
+-- defined:
+--
+--  * `name`: Name of the option (mandatory).
+--  * `ppd_name`: Name of the option in a PPD file (optional, if different
+--    from `name`).
+--  * `ppd_type`: Type of the PPD option (e.g. `PickOne`, mandatory).
+--  * `desc`: Long description suited for displaying to users (mandatory).
+--  * `ppd_desc`: Long description of the option, to use in PPDs (optional,
+--     if different from `desc`).
+--  * `default`: Default value (optional).
+--  * `ppd_default`: Attribute used in the PPD to define the default value
+--    (optional).
+--  * `values`: Possible values for the option (optional, needed for
+--    `PickOne` options).
+--
+-- @section option
+--
+local printeroption = object:clone
+{
+	--- Generate a code snippet suitable for inclusion in a PPD.
+	--
+	-- @name printeroption:ppd
+	--
+	ppd = function (self)
+		local name = self.ppd_name or self.name
+		local desc = self.ppd_desc or self.desc or name
+		local r = { sprintf ("*OpenUI *%s/%s: %s", name, desc, self.ppd_kind) }
+		if self.default then
+			if self.ppd_default then
+				tinsert (r, sprintf ("*%s: %s", self.ppd_default, self.default))
+			else
+				tinsert (r, sprintf ("*Default%s: %s", name, self.default))
+			end
+		end
+		if self.values then
+			for k, v in pairs (self.values) do
+				tinsert (r, sprintf ("*%s %s/%s: \"\"", name, k, v))
+			end
+		end
+		tinsert (r, sprintf ("*CloseUI: *%s\n", name))
+		return tconcat (r, "\n")
+	end;
+}
+
+
+local option_class =
+{
+	pagesize = printeroption:clone
+	{
+		name     = "PageSize";
+		desc     = "Media Size";
+		ppd_kind = "PickOne";
+		values   = {};
+	};
 }
 
 
