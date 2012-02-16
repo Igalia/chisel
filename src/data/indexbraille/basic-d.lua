@@ -6,6 +6,8 @@
 -- Distributed under terms of the MIT license.
 --
 
-return lib.printerdata:extend "indexbraille/base" {
-	model = "Basic-D";
+return {
+	base        = "indexbraille/base";
+	model       = "Basic-D";
+	ieee1284_id = "MFG:Index Braille AB; MDL:Basic-D;";
 }
