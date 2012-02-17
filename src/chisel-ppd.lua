@@ -18,12 +18,16 @@ local function cmd_list ()
 			for _, model in ipairs (fs.listdir (chisel.libdir .. "/data/" .. manufacturer)) do
 				if model:sub (1, 1) ~= "." then
 					model = model:sub (1, -5) -- Remove ".lua" suffix
-					local d = lib.printerdata.get (manufacturer .. "/" .. model)
-					if d.manufacturer and d.model then
-						print (lfmt:format (manufacturer, model,
-																d.manufacturer,
-																d.manufacturer, d.model,
-																d.ieee1284_id or ""))
+					if chisel.options.plain then
+						print (manufacturer .. "/" .. model)
+					else
+						local d = lib.printerdata.get (manufacturer .. "/" .. model)
+						if d.manufacturer and d.model then
+							print (lfmt:format (manufacturer, model,
+							                    d.manufacturer,
+							                    d.manufacturer, d.model,
+							                    d.ieee1284_id or ""))
+						end
 					end
 				end
 			end
@@ -40,7 +44,7 @@ local cmds = {
 	};
 	list = {
 		cmd_func = cmd_list;
-		synopsis = "list";
+		synopsis = "list [plain]";
 		longdesc = "List all supported devices";
 	};
 }
