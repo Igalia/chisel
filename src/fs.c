@@ -42,9 +42,12 @@ Lists the items in a directory.
 
 If no argument is given, the current directory is listed. Returns a
 list of strings and a number with the number of elements in the list.
+By default hidden files will not be listed. Note that entries for the
+current and the ancestor directories (`.` and `..`) are never returned.
 
 @function listdir
 @param path Path to the directory (optional).
+@param hidden Return also hidden files (`false` by default).
 @return List and count of elements in the list.
 */
 static int
@@ -52,19 +55,30 @@ fs_listdir (lua_State *L)
 {
     struct dirent *de;
     const char *path;
+    int hidden = 0;
     long idx;
     DIR *d;
 
     assert (L);
 
     path = luaL_optstring (L, 1, ".");
+
+    if (lua_gettop (L) > 1)
+        hidden = lua_toboolean (L, 2);
+
     if ((d = opendir (path)) == NULL)
         return fs_push_error (L, path);
 
     lua_newtable (L);
-    for (idx = 1; (de = readdir (d)) != NULL; idx++) {
+    for (idx = 1; (de = readdir (d)) != NULL;) {
+        if (de->d_name[0] == '.' && !hidden)
+            continue;
+        if (de->d_name[1] == '\0') /* "." entry */
+            continue;
+        if (de->d_name[1] == '.' && de->d_name[2] == '\0') /* ".." entry */
+            continue;
         lua_pushstring (L, de->d_name);
-        lua_rawseti (L, -2, idx);
+        lua_rawseti (L, -2, idx++);
     }
 
     closedir (d);
