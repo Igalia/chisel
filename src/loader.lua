@@ -33,13 +33,29 @@ end
 -- @return Document tree.
 --
 function M.parsestring (input)
+	-- Create the sandboxed environment used for loading documents.
 	local env = {}
 	setmetatable (env, { __index = doc_funcs })
+
+	-- The top-level document() function has to be created here as a closure
+	-- so it can reference the "result" upvalue in the containing function.
+	local result = nil
+	function env.document (...)
+		result = doc_funcs.document (...)
+	end
+
+	-- Load the chunk from the passed string
 	local chunk, err = load (input, nil, "t", env)
 	if chunk == nil then
-		error (err)
+		return nil, err
 	end
-	return chunk ()
+
+	chunk, err = pcall (chunk)
+	if chunk == false then
+		return nil, err
+	end
+
+	return result
 end
 
 
@@ -50,13 +66,29 @@ end
 -- @return Document tree.
 --
 function M.parse (input)
+	-- Create the sandbox environment used for loading documents.
 	local env = {}
 	setmetatable (env, { __index = doc_funcs })
+
+	-- The top-level document() function has to be created here as a closure
+	-- so it can reference the "result" upvalue in the containing function.
+	local result = nil
+	function env.document (...)
+		result = doc_funcs.document (...)
+	end
+
+	-- Load the chunk from disk
 	local chunk, err = loadfile (input, "t", env)
 	if chunk == nil then
-		error (err)
+		return nil, err
 	end
-	return chunk ()
+
+	chunk, err = pcall (chunk)
+	if chunk == false then
+		return nil, err
+	end
+
+	return result
 end
 
 
