@@ -82,6 +82,18 @@ local-symlinks:
 	done
 
 
+install: install-data
+
+install-data:
+	$(cmd_print) INSTALL "[data]"
+	install -m 755 -d $(DESTDIR)$(PREFIX)/share/chisel/data
+	cp -r src/data/* $(DESTDIR)$(PREFIX)/share/chisel/data/
+	find $(DESTDIR)$(PREFIX)/share/chisel/data -type d | xargs chmod 755
+	find $(DESTDIR)$(PREFIX)/share/chisel/data -type f | xargs chmod 644
+
+.PHONY: install-data
+
+
 clean:
 	$(RM) $(chisel_OBJS)
 	$(RM) $(liblua_OBJS)
