@@ -50,6 +50,28 @@ install: install-$1
 .PHONY: install-$1
 endef
 
+# $(eval $(call symlinks-target,NAME))
+#
+# Generates Makefile rules for instaling symlinks, use it like this:
+#
+#   symlinks_NAME = symlink1 symlink2 ... symlinkN
+#   symlinks_NAME_PATH = /path/to/dir
+#   symlinks_NAME_TARGET = /path/to/target
+#   symlinks_NAME_DIR_MODE = 755
+#   $(eval $(call symlinks-target,NAME))
+#
+define symlinks-target
+symlinks-$1:
+	$(cmd_print) SYMLINKS $$(symlinks_$1_PATH)
+	install -m $$(or $$(symlinks_$1_DIR_MODE),$$(install_DIR_MODE),755) \
+		-d $$(DESTDIR)$$(symlinks_$1_PATH)
+	for name in $$(symlinks_$1) ; do \
+		ln -sf $$(symlinks_$1_TARGET) $$(DESTDIR)$$(symlinks_$1_PATH)/$$$$name ; \
+	done
+install: symlinks-$1
+.PHONY: symlinks-$1
+endef
+
 %.o: %.c
 	$(cmd_print) CC $@
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
