@@ -41,7 +41,7 @@ PREFIX ?= /usr/local
 #
 define install-target
 install-$1: $$(install_$1)
-	$(cmd_print) INSTALL $$^
+	$(cmd_print) INSTALL $$(install_$1_PATH)
 	install -m $$(or $$(install_$1_DIR_MODE),$$(install_DIR_MODE),755) \
 		-d $$(DESTDIR)$$(install_$1_PATH)
 	install -m $$(or $$(install_$1_MODE),$$(install_MODE),644) \
