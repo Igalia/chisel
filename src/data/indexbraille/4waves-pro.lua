@@ -6,7 +6,7 @@
 -- Distributed under terms of the MIT license.
 --
 
-base        = "indexbraille/base"
+base        = "indexbraille/_base"
 model       = "4Waves PRO"
 ieee1284_id = "MFG:Index Braille AB; MDL:4Waves PRO;"
 
