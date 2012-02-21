@@ -9,9 +9,8 @@
 include Makefile.rules
 include Makefile.config
 
-CHSL_DEVICES  := $(patsubst %,-DCHSL_%,$(CHSL_DEVICES))
 CHSL_CONFDEFS := $(patsubst %,-DCHSL_%=1,$(CHSL_CONFIG))
-CPPFLAGS      += $(CHSL_DEVICES) $(CHSL_CONFDEFS)
+CPPFLAGS      += $(CHSL_CONFDEFS) -DCHSL_LIBDIR=\"$(PREFIX)/share/chisel\"
 CFLAGS        += -Wall -W -g -O0
 
 $(foreach option,$(CHSL_CONFIG),$(eval CHSL_CONFIG_$$(option) := 1))

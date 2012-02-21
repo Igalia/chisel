@@ -19,9 +19,9 @@
 
 #define CHSL_VERSION "0.1"
 
-#ifndef CHSL_LUA_LIBDIR
-#define CHSL_LUA_LIBDIR "src/"
-#endif /* !CHSL_LUA_LIBDIR */
+#ifndef CHSL_LIBDIR
+#define CHSL_LIBDIR "/usr/local/share/chisel"
+#endif /* !CHSL_LIBDIR */
 
 #ifndef CHSL_REPL_MAXINPUT
 #define CHSL_REPL_MAXINPUT 512
@@ -31,12 +31,12 @@
 #define CHSL_REPL_PROMPT2 "    ...) "
 
 #define HELP_TEXT \
-    "Usage: %s [flags] [option1=value1 ... [optionN=valueN]]\n\n"    \
-    "Available command line flags:\n\n"                              \
-    "   -L PATH   Set library path (default: " CHSL_LUA_LIBDIR ")\n" \
-    "   -S NAME   Script to run (default: same as program name)\n"   \
-    "   -v        Be verbose. Use twice for debugging output\n"      \
-    "   -i        Run an interactive Lua interpreter.\n\n"           \
+    "Usage: %s [flags] [option1=value1 ... [optionN=valueN]]\n\n"  \
+    "Available command line flags:\n\n"                            \
+    "   -L PATH   Set library path (default: " CHSL_LIBDIR ")\n"   \
+    "   -S NAME   Script to run (default: same as program name)\n" \
+    "   -v        Be verbose. Use twice for debugging output\n"    \
+    "   -i        Run an interactive Lua interpreter.\n\n"         \
     "Useable options vary depending on the script being run.\n\n"
 
 #define BOOT_SCRIPT \
@@ -66,7 +66,7 @@
 #endif /* CHSL_READLINE */
 
 
-static char *g_libdir = CHSL_LUA_LIBDIR;
+static char *g_libdir = CHSL_LIBDIR;
 static char *g_script = NULL;
 static int   g_loglvl = 0;
 static int   g_repl   = 0;
