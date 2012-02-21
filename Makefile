@@ -16,13 +16,6 @@ CFLAGS        += -Wall -W -g -O0
 
 $(foreach option,$(CHSL_CONFIG),$(eval CHSL_CONFIG_$$(option) := 1))
 
-ifeq ($(CHSL_CONFIG_CUPS),1)
-CUPS_CFLAGS  := $(shell cups-config --cflags)
-CUPS_LDFLAGS := $(shell cups-config --ldflags)
-CUPS_LDLIBS  := $(shell cups-config --libs)
-CUPS_BINDIR  := $(shell cups-config --serverbin)
-endif
-
 ifeq ($(CHSL_CONFIG_READLINE),1)
 EXTRA_LDLIBS += -lreadline
 endif
@@ -40,17 +33,38 @@ $(liblua_OBJS): CPPFLAGS += -DLUA_USE_POSIX
 chisel_SRCS  := $(wildcard src/*.c)
 chisel_OBJS  := $(patsubst %.c,%.o,$(chisel_SRCS))
 
-symlink_FILTERS      := chisel-ppd texttochisel
-install_FILTERS      := chisel
-install_FILTERS_MODE := 755
+filters := texttochisel
+drivers := chisel-ppd
+
+symlink_BIN      := $(filters) $(drivers)
+install_BIN      := chisel
+install_BIN_PATH := $(PREFIX)/bin
+install_BIN_MODE := 755
 
 ifeq ($(CHSL_CONFIG_CUPS),1)
-install_FILTERS_PATH := $(CUPS_BINDIR)/filter
-else
-install_FILTERS_PATH := $(PREFIX)/lib/chisel
+CUPS_CFLAGS  := $(shell cups-config --cflags)
+CUPS_LDFLAGS := $(shell cups-config --ldflags)
+CUPS_LDLIBS  := $(shell cups-config --libs)
+CUPS_BINDIR  := $(shell cups-config --serverbin)
+
+symlinks_CUPS_DRIVERS        := $(drivers)
+symlinks_CUPS_DRIVERS_PATH   := $(CUPS_BINDIR)/driver
+symlinks_CUPS_DRIVERS_TARGET := $(PREFIX)/bin/chisel
+
+symlinks_CUPS_FILTERS        := $(filters)
+symlinks_CUPS_FILTERS_PATH   := $(CUPS_BINDIR)/filter
+symlinks_CUPS_FILTERS_TARGET := $(PREFIX)/bin/chisel
+
+$(eval $(call symlinks-target,CUPS_DRIVERS))
+$(eval $(call symlinks-target,CUPS_FILTERS))
 endif
 
-all: $(install_FILTERS) link-filters
+
+install_SCRIPTS      := $(wildcard src/*.lua)
+install_SCRIPTS_PATH := $(PREFIX)/share/chisel
+
+
+all: $(install_BIN) local-symlinks
 
 chisel: CFLAGS  += $(CUPS_CFLAGS)
 chisel: LDLIBS  += $(CUPS_LDLIBS) $(EXTRA_LDLIBS)
@@ -60,11 +74,11 @@ chisel: $(chisel_OBJS) $(liblua_OBJS)
 # If the configuration changes, all object files should be rebuilt
 $(chisel_OBJS): Makefile.config
 
-$(symlink_FILTERS): link-filters
-.PHONY: link-filtes
+.PHONY: local-symlinks
 
-link-filters:
-	for i in $(symlink_FILTERS); do \
+local-symlinks:
+	$(cmd_print) SYMLINKS .
+	for i in $(filters) $(drivers) ; do \
 		ln -sf chisel $$i ; \
 	done
 
@@ -73,7 +87,8 @@ clean:
 	$(RM) $(chisel_OBJS)
 	$(RM) $(liblua_OBJS)
 	$(RM) chisel
+	$(RM) $(filters) $(drivers)
 
-$(eval $(call install-target,FILTERS))
-
+$(eval $(call install-target,BIN))
+$(eval $(call install-target,SCRIPTS))
 
