@@ -13,9 +13,11 @@
 local sprintf  = string.format
 local tconcat  = table.concat
 local tinsert  = table.insert
+local loadfile = loadfile
 local tostring = tostring
 local ipairs   = ipairs
 local pairs    = pairs
+local pcall    = pcall
 local type     = type
 
 
@@ -182,13 +184,32 @@ local option_class =
 
 local function _printerdata_get (name)
 	local base = {}
-	local data = require ("data/" .. name)
-	if data.base then
-		base = _printerdata_get (data.base)
+	local data = {}
+	local path = sprintf ("%s/data/%s.lua", chisel.libdir, name)
+
+	-- Load the chunk, if there is some error, return nil+error
+	local chunk, err = loadfile (path, "t", data)
+	if chunk == nil  then
+		return nil, e
 	end
+	chunk, err = pcall (chunk)
+
+	if not chunk then
+		return nil, err
+	end
+
+	if data.base then
+		base, err = _printerdata_get (data.base)
+		if base == nil then
+			return nil, err
+		end
+	end
+
+	-- TODO Make merging of items better using recursive merge.
 	for k, v in pairs (data) do
 		base[k] = v
 	end
+
 	return base
 end
 

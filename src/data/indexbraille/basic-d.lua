@@ -6,8 +6,7 @@
 -- Distributed under terms of the MIT license.
 --
 
-return {
-	base        = "indexbraille/base";
-	model       = "Basic-D";
-	ieee1284_id = "MFG:Index Braille AB; MDL:Basic-D;";
-}
+base        = "indexbraille/base"
+model       = "Basic-D"
+ieee1284_id = "MFG:Index Braille AB; MDL:Basic-D;"
+
