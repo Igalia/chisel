@@ -27,4 +27,12 @@ options = {
 		["115x110"] = "11.5x11";
 		["A4TF"   ] = "A4 Tractor Feed";
 	};
+
+	duplex = {
+		default = "None";
+
+		-- Possible values
+		"None";
+		"NoTumble";
+	};
 }

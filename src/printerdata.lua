@@ -185,6 +185,13 @@ local builtin_pagesizes =
 	Letter = "US Letter";
 }
 
+local builtin_duplex =
+{
+	None     = "Off";
+	Tumble   = "Top Edge Binding";
+	NoTumble = "Left Edge Binding";
+}
+
 
 local option_class =
 {
@@ -199,6 +206,13 @@ local option_class =
 	pageregion = printeroption:clone
 	{
 		name     = "PageRegion";
+		ppd_kind = "PickOne";
+		values   = {};
+	};
+
+	duplex = printeroption:clone
+	{
+		name     = "Duplex";
 		ppd_kind = "PickOne";
 		values   = {};
 	};
@@ -303,6 +317,9 @@ local printerdata = object:clone
 		return self
 	end;
 
+	_init_option_duplex = option_gather_function ("duplex mode",
+	                                              builtin_duplex,
+	                                              option_class.duplex);
 
 	_init_option_pagesize = option_gather_function ("page size",
 	                                                builtin_pagesizes,
