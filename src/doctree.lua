@@ -12,6 +12,18 @@ local M = {}
 
 --- Base document tree element.
 --
+-- The base element provides the framework for the rest of the document tree
+-- representation.
+--
+-- **Attributes**
+--
+-- * `children`: List of child nodes. To manipulate it, use
+--   @{element:child}, @{element:add_child}, @{element:del_child},
+--   @{element:has_child} and @{element:has_children}.
+--
+-- * `data`: Arbitrary data attached to the element. Usually leaf elements
+--   (like [text](#Text_element)) use this to store their associated data.
+--
 -- @section element
 --
 M.element = object:clone
@@ -24,7 +36,7 @@ M.element = object:clone
 	-- Note that the base class does not implement it and will raise an error.
 	--
 	-- @param device Output @{device}.
-	-- @name element:render
+	-- @function element:render
 	--
 	render = function (self, device)
 		error ("unimplemented")
@@ -32,25 +44,88 @@ M.element = object:clone
 
 	--- Checks whether the node has children.
 	--
-	-- @name element:has_children
+	-- @function element:has_children
 	--
 	has_children = function (self)
 		return self.children and #self.children > 0
 	end;
 
+	--- Checks whether an element is a children of another.
+	--
+	-- @param element Element to be checked.
+	-- @return Whether *element* is a children.
+	-- @function element:has_child
+	--
+	has_child = function (self, element)
+		if self:has_children () then
+			for _, v in ipairs (self.children) do
+				if v == element then
+					return true
+				end
+			end
+		end
+		return false
+	end;
+
+	--- Return a particular child, of a list of children
+	--
+	-- @param index Index of the element to obtain. If not given, the complete
+	-- list of children elements is returned *(Optional)*.
+	-- @return List, element, or `nil` if the requested element is not
+	-- a child.
+	-- @function element:child
+	--
+	child = function (self, index)
+		if index == nil then
+			return self.children or {}
+		end
+		return self.children[index]
+	end;
+
+	--- Removes a children from an element.
+	--
+	-- @param element Element to be removed as child. If the element is not
+	-- a child, no error is produced. Also, it is possible to pass a numeric
+	-- index instead of the element reference.
+	-- @return The element itself, to allow chain-calls.
+	-- @function element:del_child
+	--
+	del_child = function (self, element)
+		local index = nil
+		if self:has_children () then
+			if type (element) == "number" then
+				index = element
+			else
+				for i, v in ipairs (self.children) do
+					if v == element then
+						index = i
+						break
+					end
+				end
+			end
+			if index ~= nil then
+				table.remove (self.children, index)
+			end
+		end
+		return self
+	end;
+
 	--- Appends (or inserts at a given position) a node as a new child.
 	--
-	-- The interpretation of the arguments (position, etc) is the same
-	-- as for @{table.insert}.
-	--
+	-- @param element Element to be added as a child.
+	-- @param position Position *(Optional)*.
 	-- @return The element itself, to allow chain-calls.
-	-- @name element:add_child
+	-- @function element:add_child
 	--
-	add_child = function (self, ...)
+	add_child = function (self, element, position)
 		if self.children == nil then
 			self.children = {}
 		end
-		table.insert (self.children, ...)
+		if position ~= nil then
+			table.insert (self.children, position, element)
+		else
+			table.insert (self.children, element)
+		end
 		return self
 	end;
 
@@ -71,7 +146,7 @@ M.element = object:clone
 	-- @param name Name used as suffix to derive the names of the
 	-- enter and exit function in the output device.
 	-- @param device Output device.
-	-- @name element:walk
+	-- @function element:walk
 	--
 	walk = function (self, name, device)
 		local beginf = device["begin_" .. name]
@@ -105,7 +180,7 @@ M.document = M.element:clone
 {
 	--- Renders a document.
 	-- @param device Output @{device}.
-	-- @name document:render
+	-- @function document:render
 	render = function (self, device)
 		self:walk ("document", device)
 	end;
@@ -123,7 +198,7 @@ M.text = M.element:clone
 {
 	--- Renders text.
 	-- @param device Output @{device}.
-	-- @name text:render
+	-- @function text:render
 	render = function (self, device)
 		self:walk ("text", device)
 	end;
