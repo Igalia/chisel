@@ -1,0 +1,6 @@
+-- A miminal Chisel document, containing only some text.
+
+document {
+	text "Hello, world\n"
+}
+
