@@ -66,6 +66,17 @@ local ppd_template = {
 										 data.manufacturer, data.model)
 	end;
 
+	-- Filter command, for use with CUPS
+	function (data)
+		if data.output then
+			return sprintf ("*cupsVersion: 1.0\n\z
+			                 *cupsFilter: \"application/x-chisel-text 0 chisel device=%s\"",
+			                 data.output)
+		else
+			return "*% No 'output' option defined, skipping CUPS attributes."
+		end
+	end;
+
 	-- Color model
 	function (data)
 		local colors = data.colorspace
