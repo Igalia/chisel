@@ -324,7 +324,7 @@ find_script (void)
         progname = g_script;
 
     strcpy (filename, g_libdir);
-    strcat (filename, "/");
+    strcat (filename, "/scripts/");
     strcat (filename, progname);
     strcat (filename, ".lua");
 

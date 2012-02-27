@@ -59,9 +59,10 @@ $(eval $(call symlinks-target,CUPS_FILTERS))
 endif
 
 
-install_SCRIPTS      := $(wildcard src/*.lua)
-install_SCRIPTS_PATH := $(PREFIX)/share/chisel
-
+install_LIB          := $(wildcard src/*.lua)
+install_LIB_PATH     := $(PREFIX)/share/chisel
+install_SCRIPTS      := $(wildcard src/scripts/*.lua)
+install_SCRIPTS_PATH := $(install_LIB_PATH)/scripts
 
 all: $(install_BIN) $(filters) $(drivers)
 
@@ -99,5 +100,6 @@ clean:
 	$(RM) $(filters) $(drivers)
 
 $(eval $(call install-target,BIN))
+$(eval $(call install-target,LIB))
 $(eval $(call install-target,SCRIPTS))
 
