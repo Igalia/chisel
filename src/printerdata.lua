@@ -195,6 +195,13 @@ local option_class =
 		ppd_kind = "PickOne";
 		values   = {};
 	};
+
+	pageregion = printeroption:clone
+	{
+		name     = "PageRegion";
+		ppd_kind = "PickOne";
+		values   = {};
+	};
 }
 
 
@@ -254,6 +261,15 @@ local printerdata = object:clone
 				self.options[k] = opt_init_func (self, v)
 			end
 		end
+		-- If there is no "pageregion" options, create one by copying from
+		-- an existing "pagesize" one.
+		if self.options.pageregion == nil then
+			self.options.pageregion = option_class.pageregion:clone {
+				values  = self.options.pagesize.values,
+				default = self.options.pagesize.default,
+				comment = "Note: copied from options.pagesize",
+			}
+		end
 		return self
 	end;
 
@@ -281,6 +297,32 @@ local printerdata = object:clone
 		vals.default = nil
 
 		return option_class.pagesize:clone { values = vals, default = defval }
+	end;
+
+	_init_option_pageregion = function (self, ps)
+		if type (ps) ~= "table" then
+			error ("Page regions must be a table/list")
+		end
+		local vals = {}
+		for k, v in pairs (ps) do
+			if type (k) == "number" then
+				-- Numeric index, pick element from builtin page sizes
+				if builtin_pagesizes[v] == nil then
+					error ("Unknown builtin page size '" .. v .. "'")
+				end
+				debug (" adding builting pagesize %s\n", v)
+				vals[v] = builtin_pagesizes[v]
+			else
+				-- Pick value as-is
+				debug (" adding pagesize %s (%s)\n", k, v)
+				vals[k] = v
+			end
+		end
+
+		local defval = vals.default
+		vals.default = nil
+
+		return option_class.pageregion:clone { values = vals, default = defval }
 	end;
 
 	--- Generates PPD data.
