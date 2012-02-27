@@ -183,7 +183,13 @@ repl_pushline (lua_State *L, int firstline)
      * Add a "return" to the first line, to print the result, but only if
      * it is not already there, and the statement is not an assignment.
      */
-    if (firstline && strncmp (b, "return", 6) && !strchr (b, '='))
+    if (firstline &&
+        strncmp (b, "for", 3) &&
+        strncmp (b, "while", 5) &&
+        strncmp (b, "repeat", 6) &&
+        strncmp (b, "return", 6) &&
+        strncmp (b, "function", 8) &&
+        !strchr (b, '='))
         lua_pushfstring (L, "return %s", b);
     else
         lua_pushstring (L, b);
