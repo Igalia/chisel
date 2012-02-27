@@ -237,6 +237,36 @@ local function _printerdata_get (name)
 end
 
 
+local function option_gather_function (name, builtins, optclass)
+	return function (self, ps)
+		if type (ps) ~= "table" then
+			error (name .. "s must be a table/list")
+		end
+
+		local vals = {}
+		for k, v in pairs (ps) do
+			if type (k) == "number" then
+				-- Numeric index, pick built-in value
+				if builtins[v] == nil then
+					error ("unknown bultin " .. name .. " '" .. v .. "'")
+				end
+				debug (" adding builtin %s '%s'\n", name, v)
+				vals[v] = builtins[v]
+			else
+				-- Pick value as-is
+				debug (" adding %s '%s' (%s)\n", name, k, v)
+				vals[k] = v
+			end
+		end
+
+		local defval = vals.default
+		vals.default = nil
+
+		return optclass:clone { values = vals, default = defval }
+	end
+end
+
+
 --- Printer data base class.
 --
 -- The `printerdata` is a base class used to describe printers and similar
@@ -273,57 +303,14 @@ local printerdata = object:clone
 		return self
 	end;
 
-	_init_option_pagesize = function (self, ps)
-		if type (ps) ~= "table" then
-			error ("Page sizes must be a table/list")
-		end
-		local vals = {}
-		for k, v in pairs (ps) do
-			if type (k) == "number" then
-				-- Numeric index, pick element from builtin page sizes
-				if builtin_pagesizes[v] == nil then
-					error ("Unknown builtin page size '" .. v .. "'")
-				end
-				debug (" adding builting pagesize %s\n", v)
-				vals[v] = builtin_pagesizes[v]
-			else
-				-- Pick value as-is
-				debug (" adding pagesize %s (%s)\n", k, v)
-				vals[k] = v
-			end
-		end
 
-		local defval = vals.default
-		vals.default = nil
+	_init_option_pagesize = option_gather_function ("page size",
+	                                                builtin_pagesizes,
+	                                                option_class.pagesize);
 
-		return option_class.pagesize:clone { values = vals, default = defval }
-	end;
-
-	_init_option_pageregion = function (self, ps)
-		if type (ps) ~= "table" then
-			error ("Page regions must be a table/list")
-		end
-		local vals = {}
-		for k, v in pairs (ps) do
-			if type (k) == "number" then
-				-- Numeric index, pick element from builtin page sizes
-				if builtin_pagesizes[v] == nil then
-					error ("Unknown builtin page size '" .. v .. "'")
-				end
-				debug (" adding builting pagesize %s\n", v)
-				vals[v] = builtin_pagesizes[v]
-			else
-				-- Pick value as-is
-				debug (" adding pagesize %s (%s)\n", k, v)
-				vals[k] = v
-			end
-		end
-
-		local defval = vals.default
-		vals.default = nil
-
-		return option_class.pageregion:clone { values = vals, default = defval }
-	end;
+	_init_option_pageregion = option_gather_function ("page region",
+	                                                  builtin_pagesizes,
+	                                                  option_class.pageregion);
 
 	--- Generates PPD data.
 	--
