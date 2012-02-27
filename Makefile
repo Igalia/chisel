@@ -63,7 +63,7 @@ install_SCRIPTS      := $(wildcard src/*.lua)
 install_SCRIPTS_PATH := $(PREFIX)/share/chisel
 
 
-all: $(install_BIN) local-symlinks
+all: $(install_BIN) $(filters) $(drivers)
 
 chisel: CFLAGS  += $(CUPS_CFLAGS)
 chisel: LDLIBS  += $(CUPS_LDLIBS) $(EXTRA_LDLIBS)
@@ -73,9 +73,7 @@ chisel: $(chisel_OBJS) $(liblua_OBJS)
 # If the configuration changes, all object files should be rebuilt
 $(chisel_OBJS): Makefile.config
 
-.PHONY: local-symlinks
-
-local-symlinks:
+$(filters) $(drivers): chisel
 	$(cmd_print) SYMLINKS .
 	for i in $(filters) $(drivers) ; do \
 		ln -sf chisel $$i ; \
