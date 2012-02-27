@@ -153,7 +153,11 @@ local printeroption = object:clone
 	ppd = function (self)
 		local name = self.ppd_name or self.name
 		local desc = self.ppd_desc or self.desc or name
-		local r = { sprintf ("*OpenUI *%s/%s: %s", name, desc, self.ppd_kind) }
+		local r = {}
+		if self.comment then
+			tinsert (r, sprintf ("*%% %s", self.comment))
+		end
+		tinsert (r, sprintf ("*OpenUI *%s/%s: %s", name, desc, self.ppd_kind))
 		if self.default then
 			if self.ppd_default then
 				tinsert (r, sprintf ("*%s: %s", self.ppd_default, self.default))
