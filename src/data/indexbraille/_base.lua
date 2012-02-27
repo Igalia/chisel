@@ -8,6 +8,7 @@
 
 manufacturer = "Index Braille"
 output       = "indexbraille-v4"
+throughput   = 4
 
 options = {
 	pagesize = {

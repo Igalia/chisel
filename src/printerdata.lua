@@ -56,6 +56,7 @@ local ppd_template = {
 	ppd_attribute ("1284DeviceID", "ieee1284_id", true);
 	ppd_attribute ("Manufacturer", "manufacturer");
 	ppd_attribute ("ModelName",    "model");
+	ppd_attribute ("Throughput",   "throughput", true);
 
 	-- Extra redundant model infos which can be derived from the above
 	function (data)
