@@ -141,6 +141,9 @@ local ppd_template = {
 --    (optional).
 --  * `values`: Possible values for the option (optional, needed for
 --    `PickOne` options).
+--  * `ui`: The option does have an UI, i.e. in the generated PPD
+--     there will be both an `*OpenUI` and a `*CloseUI` statement
+--     for the option. By default it is set to `true`.
 --
 -- @section option
 --
@@ -154,10 +157,15 @@ local printeroption = object:clone
 		local name = self.ppd_name or self.name
 		local desc = self.ppd_desc or self.desc or name
 		local r = {}
+
 		if self.comment then
 			tinsert (r, sprintf ("*%% %s", self.comment))
 		end
-		tinsert (r, sprintf ("*OpenUI *%s/%s: %s", name, desc, self.ppd_kind))
+
+		if self.ui then
+			tinsert (r, sprintf ("*OpenUI *%s/%s: %s", name, desc, self.ppd_kind))
+		end
+
 		if self.default then
 			if self.ppd_default then
 				tinsert (r, sprintf ("*%s: %s", self.ppd_default, self.default))
@@ -170,9 +178,16 @@ local printeroption = object:clone
 				tinsert (r, sprintf ("*%s %s/%s: \"\"", name, k, v))
 			end
 		end
-		tinsert (r, sprintf ("*CloseUI: *%s\n", name))
+
+		if self.ui then
+			tinsert (r, sprintf ("*CloseUI: *%s\n", name))
+		end
+
 		return tconcat (r, "\n")
 	end;
+
+	-- Enabled by default.
+	ui = true;
 }
 
 
