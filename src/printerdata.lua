@@ -215,21 +215,18 @@ local option_class =
 		name     = "PageSize";
 		desc     = "Media Size";
 		ppd_kind = "PickOne";
-		values   = {};
 	};
 
 	pageregion = printeroption:clone
 	{
 		name     = "PageRegion";
 		ppd_kind = "PickOne";
-		values   = {};
 	};
 
 	duplex = printeroption:clone
 	{
 		name     = "Duplex";
 		ppd_kind = "PickOne";
-		values   = {};
 	};
 }
 
