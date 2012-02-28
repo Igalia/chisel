@@ -173,9 +173,14 @@ local printeroption = object:clone
 				tinsert (r, sprintf ("*Default%s: %s", name, self.default))
 			end
 		end
+
 		if self.values then
 			for k, v in pairs (self.values) do
-				tinsert (r, sprintf ("*%s %s/%s: \"\"", name, k, v))
+				if type (v) == "table" then
+					tinsert (r, sprintf ("*%s %s/%s: \"%s\"", name, k, v[1], v[2]))
+				else
+					tinsert (r, sprintf ("*%s %s/%s: \"\"", name, k, v))
+				end
 			end
 		end
 
@@ -207,6 +212,14 @@ local builtin_duplex =
 	NoTumble = "Left Edge Binding";
 }
 
+local builtin_media =
+{
+	Letter = { size={ 612;         792        } };
+	Legal  = { size={ 612;        1008        } };
+	A3     = { size={ 841.889765; 1190.551180 } };
+	A4     = { size={ 595.275590;  841.889765 } };
+	A5     = { size={ 419.527560;  595.275590 } };
+}
 
 local option_class =
 {
@@ -228,6 +241,9 @@ local option_class =
 		name     = "Duplex";
 		ppd_kind = "PickOne";
 	};
+
+	paperdimension = printeroption:clone { name = "PaperDimension"; ui = false };
+	imageablearea  = printeroption:clone { name = "ImageableArea" ; ui = false };
 }
 
 
@@ -293,6 +309,36 @@ local function option_gather_function (name, builtins, optclass)
 end
 
 
+local function calculate_iarea_and_paperdim (psize, media)
+	local iarea = {}
+	local ppdim = {}
+
+	for name, attributes in pairs (media) do
+		if not attributes.margins then
+			error ("no margins specified for media '" .. name .. "'")
+		end
+
+		iarea[name] = attributes.margins
+
+		if attributes.size then
+			ppdim[name] = attributes.size
+		elseif builtin_media[name] ~= nil then
+			ppdim[name] = builtin_media[name].size
+		else
+			error ("size not specified for media '" .. name .. "'")
+		end
+
+		iarea[name] = { psize.values[name];
+			              sprintf ("%.6f %.6f %.6f %.6f", table.unpack (iarea[name])) }
+		ppdim[name] = { psize.values[name];
+	                  sprintf ("%.6f %.6f", table.unpack (ppdim[name])) }
+	end
+
+	return option_class.imageablearea:clone  { default=psize.default; values=iarea },
+	       option_class.paperdimension:clone { default=psize.default; values=ppdim }
+end
+
+
 --- Printer data base class.
 --
 -- The `printerdata` is a base class used to describe printers and similar
@@ -307,25 +353,36 @@ local printerdata = object:clone
 {
 	_init = function (self)
 		debug ("printerdata:_init: %s/%s\n", self.manufacturer, self.model)
-		if not self.options then
-			return
-		end
-		for k, v in pairs (self.options) do
-			local opt_init_func = self["_init_option_" .. k]
-			debug ("printerdata:_init_option_%s: %s\n", k, opt_init_func)
-			if opt_init_func then
-				self.options[k] = opt_init_func (self, v)
+
+		if self.options then
+			for k, v in pairs (self.options) do
+				local opt_init_func = self["_init_option_" .. k]
+				debug ("printerdata:_init_option_%s: %s\n", k, opt_init_func)
+				if opt_init_func then
+					self.options[k] = opt_init_func (self, v)
+				end
+			end
+
+			if not self.options.pagesize then
+				error ("no options.pagesize defined")
+			end
+
+			-- If there is no "pageregion" options, create one by copying from
+			-- an existing "pagesize" one.
+			if self.options.pageregion == nil then
+				self.options.pageregion = option_class.pageregion:clone {
+					values  = self.options.pagesize.values,
+					default = self.options.pagesize.default,
+					comment = "Note: copied from options.pagesize",
+				}
 			end
 		end
-		-- If there is no "pageregion" options, create one by copying from
-		-- an existing "pagesize" one.
-		if self.options.pageregion == nil then
-			self.options.pageregion = option_class.pageregion:clone {
-				values  = self.options.pagesize.values,
-				default = self.options.pagesize.default,
-				comment = "Note: copied from options.pagesize",
-			}
+
+		if self.media then
+			self.options.imageablearea, self.options.paperdimension =
+				calculate_iarea_and_paperdim (self.options.pagesize, self.media)
 		end
+
 		return self
 	end;
 
