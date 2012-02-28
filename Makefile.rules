@@ -70,6 +70,7 @@ symlinks-$1:
 	done
 install: symlinks-$1
 .PHONY: symlinks-$1
+.NOTPARALLEL: symlinks-$1
 endef
 
 %.o: %.c

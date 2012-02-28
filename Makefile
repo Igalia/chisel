@@ -80,6 +80,7 @@ $(filters) $(drivers): chisel
 		ln -sf chisel $$i ; \
 	done
 
+.NOTPARALLEL: $(filters) $(drivers)
 
 install: install-data
 
