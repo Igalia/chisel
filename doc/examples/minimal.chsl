@@ -1,3 +1,5 @@
+#!chisel
+
 -- A miminal Chisel document, containing only some text.
 
 document {
