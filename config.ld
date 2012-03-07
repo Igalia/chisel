@@ -9,5 +9,6 @@ dir     = "doc/html/"
 topics  = {
 	"readme.md";
 	"doc/architecture.md";
+	"doc/docformat.md";
 }
 
