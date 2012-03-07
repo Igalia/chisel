@@ -123,6 +123,40 @@ local ppd_template = {
 	end;
 }
 
+--- Built-in option values
+-- @section buitin_values
+
+--- Built-in page sizes
+local builtin_pagesizes =
+{
+	A3     = "A3";        -- Standard DIN A3 paper
+	A4     = "A4";        -- Standard DIN A4 paper
+	A5     = "A5";        -- Standard DIN A5 paper
+	Legal  = "US Legal";  -- Standard US Legal paper
+	Letter = "US Letter"; -- Standard US Letter paper
+}
+
+--- Built-in duplex operation values
+local builtin_duplex =
+{
+	None     = "Off";               -- Duplex is disabled
+	Tumble   = "Top Edge Binding";  -- Turn page on short (top) side
+	NoTumble = "Left Edge Binding"; -- Turn page on long (left) side
+}
+
+--- Built-in media sizes
+local builtin_media =
+{
+	Letter = { size={ 612;         792        } }; -- Standard US Letter paper
+	Legal  = { size={ 612;        1008        } }; -- Standard US Legal paper
+	A3     = { size={ 841.889765; 1190.551180 } }; -- Standard DIN A3 paper
+	A4     = { size={ 595.275590;  841.889765 } }; -- Standard DIN A4 paper
+	A5     = { size={ 419.527560;  595.275590 } }; -- Standard DIN A5 paper
+}
+
+
+--- Printer data.
+-- @section printer_data
 
 --- Printer option.
 --
@@ -145,7 +179,7 @@ local ppd_template = {
 --     there will be both an `*OpenUI` and a `*CloseUI` statement
 --     for the option. By default it is set to `true`.
 --
--- @section option
+-- @table printeroption
 --
 local printeroption = object:clone
 {
@@ -195,31 +229,6 @@ local printeroption = object:clone
 	ui = true;
 }
 
-
-local builtin_pagesizes =
-{
-	A3     = "A3";
-	A4     = "A4";
-	A5     = "A5";
-	Legal  = "US Legal";
-	Letter = "US Letter";
-}
-
-local builtin_duplex =
-{
-	None     = "Off";
-	Tumble   = "Top Edge Binding";
-	NoTumble = "Left Edge Binding";
-}
-
-local builtin_media =
-{
-	Letter = { size={ 612;         792        } };
-	Legal  = { size={ 612;        1008        } };
-	A3     = { size={ 841.889765; 1190.551180 } };
-	A4     = { size={ 595.275590;  841.889765 } };
-	A5     = { size={ 419.527560;  595.275590 } };
-}
 
 local option_class =
 {
@@ -347,7 +356,7 @@ end
 -- @todo Describe fields recognized, and how to make a minimal, valid
 -- printer data file.
 --
--- @section printerdata
+-- @table printerdata
 --
 local printerdata = object:clone
 {
@@ -421,7 +430,7 @@ local printerdata = object:clone
 --- Obtain the data for a device given its name.
 --
 -- @param name Device name in `manufacturer/model` form.
--- @name printerdata.get
+-- @function printerdata.get
 --
 function printerdata.get (name)
 	return printerdata:clone (_printerdata_get (name))
