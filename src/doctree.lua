@@ -9,6 +9,8 @@
 
 local M = {}
 
+--- Base element.
+-- @section base_element
 
 --- Base document tree element.
 --
@@ -24,7 +26,7 @@ local M = {}
 -- * `data`: Arbitrary data attached to the element. Usually leaf elements
 --   (like [text](#Text_element)) use this to store their associated data.
 --
--- @section element
+-- @table element
 --
 M.element = object:clone
 {
@@ -169,12 +171,15 @@ M.element = object:clone
 }
 
 
---- Top-level document element.
+--- Top-level elements
+-- @section toplevel_elements
+
+--- Document element.
 --
 -- The document element represent a complete document and its attributes.
 -- It *must* always be the top-level element in the document tree.
 --
--- @section document
+-- @table document
 --
 M.document = M.element:clone
 {
@@ -186,13 +191,15 @@ M.document = M.element:clone
 	end;
 }
 
+--- Content elements
+-- @section content_elements
 
 --- Text element.
 --
 -- Contains a blob of plain text as data payload. The payload is stored in
 -- the `data` attribute.
 --
--- @section text
+-- @table text
 --
 M.text = M.element:clone
 {

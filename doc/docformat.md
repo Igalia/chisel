@@ -36,6 +36,8 @@ elements](#Content_elements).
 
 ### `text`
 
+Document tree element: `doctree.text`
+
     text "Small portion of text"
     text {
       "Bigger chunk of text composed out of"

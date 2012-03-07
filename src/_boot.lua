@@ -52,6 +52,9 @@ debug   (" - loglevel = %q\n", chisel.version)
 debug   (" - interactive = %i\n", chisel.interactive)
 
 
+--- Object orientation
+-- @section oop
+
 --- Base object.
 --
 -- Chisel provides a simple base `object` class that supports a
@@ -84,7 +87,7 @@ debug   (" - interactive = %i\n", chisel.interactive)
 -- using @{object:extend}, and inspected using @{object:prototype}
 -- and @{object:derives}.
 --
--- @section object
+-- @table object
 --
 object = {}
 
