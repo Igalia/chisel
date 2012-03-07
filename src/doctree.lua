@@ -204,5 +204,31 @@ M.text = M.element:clone
 	end;
 }
 
+
+--- Raw data element.
+--
+-- Contains a blob of raw data, which will be sent as-is to the device.
+-- Note that the contents of the `data` will be sent to the device if
+-- the name of the output device specified in the `device` attribute
+-- matches that of the final destination.
+--
+-- **Attributes:**
+--
+-- * `device`: Name of the device the raw data applies to.
+-- * `data`: Raw data to be sent to the device.
+--
+-- @table raw
+--
+M.raw = M.element:clone {
+	--- Reders raw data.
+	-- @param device Output @{device}.
+	-- @function raw:render
+	render = function (self, device)
+		if self.device == device.name then
+			device:write (self.data)
+		end
+	end;
+}
+
 return M
 

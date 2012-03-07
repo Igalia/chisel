@@ -1,0 +1,12 @@
+#!chisel
+
+document {
+	--
+	-- Using raw() allows to send data directly to the device. Note
+	-- that the data must be manually formatted in something that the
+	-- device can actually understand!
+	--
+	raw ("indexbraille-v4", "You are using an Index Braille device");
+	raw ("bax10",           "You are using a Bax 10 device");
+}
+

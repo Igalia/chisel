@@ -48,5 +48,17 @@ elements](#Content_elements).
 
 Text elements contain strings to be embossed.
 
+### `raw`
+
+Document tree element: `doctree.raw`
+
+    raw ("device-model", "raw data")
+
+Blob of raw data that is to be sent to the device as-is. The data will be
+sent only when the document is being sent to a particular *device-model*,
+and ignored for the rest of devices. **Using `raw()` is discouraged** as
+it violates the purpose of the document being device-independent, still
+it is provided as a way to do fine-grained control for particular devices.
+
 <!-- vim: filetype=markdown spell spelllang=en
   -->

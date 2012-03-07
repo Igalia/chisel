@@ -31,6 +31,10 @@ function doc_funcs.options (t)
 	return t
 end
 
+function doc_funcs.raw (device, data)
+	return T.raw:clone { device = device; data = data }
+end
+
 --- Parses an input string into a document tree.
 --
 -- @param input Input string.
