@@ -26,6 +26,10 @@ function doc_funcs.document (t)
 	return T.document:clone { children = t }
 end
 
+function doc_funcs.options (t)
+	-- TODO validate options
+	return t
+end
 
 --- Parses an input string into a document tree.
 --
@@ -40,9 +44,9 @@ function M.parsestring (input)
 	-- The top-level document() function has to be created here as a closure
 	-- so it can reference the "result" upvalue in the containing function.
 	local result = nil
-	function env.document (...)
-		result = doc_funcs.document (...)
-	end
+	local options = {}
+	function env.document (...) result  = doc_funcs.document (...) end
+	function env.options  (...) options = doc_funcs.options  (...) end
 
 	-- Load the chunk from the passed string
 	local chunk, err = load (input, nil, "t", env)
@@ -55,6 +59,7 @@ function M.parsestring (input)
 		return nil, err
 	end
 
+	result.options = options
 	return result
 end
 
@@ -73,9 +78,9 @@ function M.parse (input)
 	-- The top-level document() function has to be created here as a closure
 	-- so it can reference the "result" upvalue in the containing function.
 	local result = nil
-	function env.document (...)
-		result = doc_funcs.document (...)
-	end
+	local options = {}
+	function env.document (...) result  = doc_funcs.document (...) end
+	function env.options  (...) options = doc_funcs.options  (...) end
 
 	-- Load the chunk from disk
 	local chunk, err = loadfile (input, "t", env)
@@ -88,6 +93,7 @@ function M.parse (input)
 		return nil, err
 	end
 
+	result.options = options
 	return result
 end
 
