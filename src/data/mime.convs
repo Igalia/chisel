@@ -1,0 +1,10 @@
+#
+# MIME conversion rules using the Chisel filters
+#
+# Copyright 2012 by Igalia S.L - Adrian Perez <aperez@igalia.com>
+#
+# Distributed under terms of the MIT license.
+#
+
+# Plain text types
+text/plain application/x-chisel-text 10 texttochisel

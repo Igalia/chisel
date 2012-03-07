@@ -45,6 +45,7 @@ CUPS_CFLAGS  := $(shell cups-config --cflags)
 CUPS_LDFLAGS := $(shell cups-config --ldflags)
 CUPS_LDLIBS  := $(shell cups-config --libs)
 CUPS_BINDIR  := $(shell cups-config --serverbin)
+CUPS_DATADIR := $(shell cups-config --datadir)
 
 symlinks_CUPS_DRIVERS        := $(drivers)
 symlinks_CUPS_DRIVERS_PATH   := $(CUPS_BINDIR)/driver
@@ -54,8 +55,18 @@ symlinks_CUPS_FILTERS        := $(filters)
 symlinks_CUPS_FILTERS_PATH   := $(CUPS_BINDIR)/filter
 symlinks_CUPS_FILTERS_TARGET := $(PREFIX)/bin/chisel
 
+symlinks_CUPS_MIMETYPES        := chisel.types
+symlinks_CUPS_MIMETYPES_PATH   := $(CUPS_DATADIR)/mime
+symlinks_CUPS_MIMETYPES_TARGET := $(PREFIX)/share/chisel/data/mime.types
+
+symlinks_CUPS_MIMECONVS        := chisel.convs
+symlinks_CUPS_MIMECONVS_PATH   := $(CUPS_DATADIR)/mime
+symlinks_CUPS_MIMECONVS_TARGET := $(PREFIX)/share/chisel/data/mime.convs
+
 $(eval $(call symlinks-target,CUPS_DRIVERS))
 $(eval $(call symlinks-target,CUPS_FILTERS))
+$(eval $(call symlinks-target,CUPS_MIMETYPES))
+$(eval $(call symlinks-target,CUPS_MIMECONVS))
 endif
 
 
