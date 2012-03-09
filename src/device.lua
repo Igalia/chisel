@@ -5,7 +5,7 @@
 -- @license Distributed under terms of the MIT license.
 --
 
-local strfmt = string.format
+local io_write = io.write
 
 --- Base class for devices.
 --
@@ -32,7 +32,7 @@ local device = object:clone
 	-- @name device:write
 	--
 	write = function (self, data)
-		io.write (data)
+		io_write (data)
 		return self
 	end;
 
@@ -47,8 +47,7 @@ local device = object:clone
 	-- @name device:format
 	--
 	format = function (self, format, ...)
-		self:write (strfmt (format, ...))
-		return self
+		return self:write (format:format (...))
 	end;
 
 	--- Gets a particular output device given its name.
