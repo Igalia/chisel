@@ -10,6 +10,8 @@
 -- @license Distributed under terms of the MIT license.
 --
 
+local callable = lib.ml.callable
+
 local T = lib.doctree
 local M = {}
 local doc_funcs = {}
@@ -26,9 +28,30 @@ function doc_funcs.document (t)
 	return T.document:clone { children = t }
 end
 
-function doc_funcs.options (t)
-	-- TODO validate options
-	return t
+
+local doc_options = {
+	dot_distance = tonumber;
+}
+
+
+function doc_funcs.options (t, relaxed)
+	local r = {}
+	for option, value in pairs (t) do
+		local convert = doc_options[option]
+		if convert == nil then
+			if not relaxed then
+				error (("Option %q is invalid"):format (option))
+			end
+		else
+			-- Option name is recognized. Try to do the conversion.
+			if callable (convert) then
+				r[option] = convert (value)
+			else
+				r[option] = value
+			end
+		end
+	end
+	return r
 end
 
 function doc_funcs.raw (device, data)
@@ -100,6 +123,17 @@ function M.parse (input)
 	result.options = options
 	return result
 end
+
+
+--- Validates a table containing document options
+--
+-- @param options Table containing document options.
+-- @param relaxed Relaxed checking: if an unrecognized option is given, it
+--   will be silently ignored. If `false` (the default) then unrecognized
+--   options will raise errors.
+-- @return Table containing the converted options.
+-- @name validate_options
+M.validate_options = doc_funcs.options
 
 
 return M
