@@ -8,5 +8,30 @@
 -- This is the main chisel filter program. Converst a chisel document
 -- tree to something that a particular embosser would understand.
 
+local get_device = lib.ml.safe (lib.device.get)
+
 debug("running in backend mode\n")
+
+-- Get output device. This is done as first step, so it is possible
+-- to tell the user early whether the chosen device is not available.
+--
+dev, err = get_device (chisel.options.device)
+if dev == nil then
+  if chisel.loglevel > 0 then
+    chisel.die ("Unknown device name %q\n%s\n",
+                chisel.options.device or "",
+                err)
+  else
+    chisel.die ("Unknown device name %q\n",
+                chisel.options.device or "")
+  end
+end
+
+debug ("device: %s (%s)\n", dev, dev.name)
+
+-- Parse stdin
+doc = lib.loader.parse ()
+
+-- Output document to the device
+doc:render (dev)
 
