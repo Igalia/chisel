@@ -8,19 +8,25 @@
 -- @license Distributed under terms of the MIT license.
 --
 
-local str  = require "string"
-local io   = require "io"
-local chsl = _G["chisel"]
+local chisel       = _G["chisel"]
+local stderr       = io.stderr
+local exit         = os.exit
+local require      = require
+local assert       = assert
+local type         = type
+local pairs        = pairs
+local setmetatable = setmetatable
+local getmetatable = getmetatable
 
-assert(chsl,
-       "symbol \"chisel\" is not defined")
-assert(type(chsl) == "table",
-       "type of \"chisel\" is not \"table\"")
+assert (chisel,
+        "symbol \"chisel\" is not defined")
+assert (type (chisel) == "table",
+        "type of \"chisel\" is not \"table\"")
 
 local function _log(level, format, ...)
-	if chsl.loglevel >= level then
-		io.stderr:write(str.format(format, ...))
-		io.stderr:flush()
+	if chisel.loglevel >= level then
+		stderr:write (format:format (...))
+		stderr:flush ()
 	end
 end
 
