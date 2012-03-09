@@ -58,6 +58,18 @@ debug   (" - loglevel = %q\n", chisel.version)
 debug   (" - interactive = %i\n", chisel.interactive)
 
 
+--- Formats a message to the standard error stream and exits.
+--
+-- @param format Format string *(optional)*.
+-- @param ... Format string arguments *(optional)*.
+function chisel.die (format, ...)
+	if format then
+		stderr:write (format:format (...))
+		stderr:flush ()
+	end
+	exit (1)
+end
+
 --- Object orientation
 -- @section oop
 
