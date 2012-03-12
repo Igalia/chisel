@@ -118,6 +118,24 @@ function ibv4:line_spacing_option (value)
 end
 
 
+--- Sends a number-of-copies option, but only if needed. The device supports
+-- specifying a number of copies *only if more than one copy is requested*.
+-- This means that requesting only one copy *must not* generate anything.
+-- Also, the maximum number of copies is `10.000`.
+--
+-- @param value Number of copies, range `1-10.000`.
+--
+function ibv4:copies_option (value)
+  if value < 1 or value > 10000 then
+    error (("%s: copies = %i out of the 1-10.000 range"):format (self.name, value))
+  end
+  if value > 2 then
+    debug ("%s:copies %i\n", self.name, value)
+    self:esc ("DMC%i", value)
+  end
+end
+
+
 function ibv4:begin_document (node)
 	-- The version parameter does not control any setting, but allows to
 	-- track which combiation of driver/version generated the data stream.
