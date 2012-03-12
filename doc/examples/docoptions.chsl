@@ -2,6 +2,7 @@
 
 -- Just sets some document options
 options {
+	copies       = 13;
 	dot_distance = 2.4;
 	line_spacing = "normal";
 }

@@ -21,6 +21,9 @@ properly detect the file type.
 Defines global options that affect the whole document. The following
 options are recognized:
 
+* `copies`: Number of copies to be rendered once the document is sent to
+	a device. This must be an integer.
+
 * `dot_distance`: Distance between dots, in millimeters.
 
 * `line_spacing`: Spacing between text lines. Possible values are `"normal"`

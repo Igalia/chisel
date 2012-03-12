@@ -29,7 +29,20 @@ function doc_funcs.document (t)
 end
 
 
+local function tointeger (value)
+  local number  = tonumber (value)
+  local rounded = math.floor (number)
+  if number ~= rounded then
+    error (("Number '%s' is not an integer"):format (value))
+  end
+  return rounded
+end
+
+
 local doc_options = {
+  -- Number of copies.
+  copies = tointeger;
+
   -- Dot distance is a number, in millimeters.
   dot_distance = tonumber;
 
