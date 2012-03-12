@@ -23,6 +23,22 @@ local dot_distances = {
 }
 
 
+local function value_for_closest_key (tab, value)
+  local code = tab[value]
+  if code == nil then
+    -- Search for the closest match
+    local closest
+    for candidate, candidate_code in pairs (tab) do
+      if closest == nil or abs (candidate - value) < abs (closest - value) then
+        closest, code = candidate, candidate_code
+      end
+    end
+    value = closest
+  end
+  return value, code
+end
+
+
 --- Device implementation
 -- @section dev_ibv4_device
 
@@ -57,28 +73,18 @@ function ibv4:esc (...)
 end
 
 --- Sends a dot-distance option. The value passed will be searched in
--- the @{dot_distances} table. If not found, the closer value will be
+-- the @{dot_distances} table. If not found, the closest value will be
 -- chosen.
 --
 -- @param value Dot distance, in millimeters.
 -- @return Actual value selected.
 --
 function ibv4:dot_distance_option (value)
-	local code = dot_distances[value]
-	if code == nil then
-		-- Search for the closest match
-		local closest
-		for candidate, candidate_code in pairs (dot_distances) do
-			if closest == nil or abs (candidate - value) < abs (closest - value) then
-				closest, code = candidate, candidate_code
-			end
-		end
-		debug ("%s: dot_distance: requested %f, chosen %f\n",
-		       self.name, value, closest)
-		value = closest
-	end
+  local chosen, code = value_for_closest_key (dot_distances, value,
+                                              self.name .. ":dot_distance_option")
+	debug ("%s:dot_distance requested %f, chosen %f\n", self.name, value, chosen)
 	self:esc ("DGD%i", code)
-	return value
+	return chosen
 end
 
 
