@@ -30,7 +30,14 @@ end
 debug ("device: %s (%s)\n", dev, dev.name)
 
 -- Parse stdin
-doc = lib.loader.parse ()
+doc, err = lib.loader.parse ()
+if doc == nil then
+  if chisel.loglevel > 0 then
+    chisel.die ("Could not parse input document\n")
+  else
+    chisel.die ("Could not parse input document\n%s\n", err)
+  end
+end
 
 -- Output document to the device
 doc:render (dev)
