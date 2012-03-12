@@ -30,7 +30,20 @@ end
 
 
 local doc_options = {
-	dot_distance = tonumber;
+  -- Dot distance is a number, in millimeters.
+  dot_distance = tonumber;
+
+  -- Line spacing may be "single", "normal" (translated to "single"),
+  -- "double" or a number in millimeters.
+  line_spacing = function (value)
+    if value == "normal" then
+      value = "single"
+    end
+    if not (value == "single" or value == "double") then
+      value = tonumber (value)
+    end
+    return value
+  end;
 }
 
 

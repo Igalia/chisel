@@ -13,11 +13,23 @@ properly detect the file type.
 ### `options` *(optional)*
 
     options {
+      dot_distance = 2.5;
+      line_spacing = "normal";
       -- ...
     }
 
 Defines global options that affect the whole document. The following
 options are recognized:
+
+* `dot_distance`: Distance between dots, in millimeters.
+
+* `line_spacing`: Spacing between text lines. Possible values are `"normal"`
+(or `"single"`, which has the same meaning), `"double"` or a numeric value,
+interpreted as the space between lines in millimeters.
+
+None of the options is mandatory. If not specified, the values used for
+those options are those considered as reasonable defaults for the output
+device in use.
 
 
 ### `document` *(mandatory)*

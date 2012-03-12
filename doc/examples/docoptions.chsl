@@ -3,6 +3,7 @@
 -- Just sets some document options
 options {
 	dot_distance = 2.4;
+	line_spacing = "normal";
 }
 
 document {}
