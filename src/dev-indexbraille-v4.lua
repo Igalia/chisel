@@ -23,6 +23,16 @@ local dot_distances = {
 }
 
 
+--- Supported line spacing distances, in millimeters.
+--
+local line_spacings = {
+  [ 5.0] =  50; -- 5.0mm line spacing (single spacing).
+  [10.0] = 100; -- 10.0mm line spacing (double spacing).
+}
+
+local line_spacings_by_name = { single = 5.0; double = 10.0 }
+
+
 local function value_for_closest_key (tab, value)
   local code = tab[value]
   if code == nil then
@@ -85,6 +95,26 @@ function ibv4:dot_distance_option (value)
 	debug ("%s:dot_distance requested %f, chosen %f\n", self.name, value, chosen)
 	self:esc ("DGD%i", code)
 	return chosen
+end
+
+
+--- Sends a line-spacing option. The value passed will be searched in the
+-- @{line_spacings} table. If not found, the closest value will be chosen.
+--
+-- @param value Line spacing, in millimeters. The string values `"single"`
+--   and `"double"` are also accepted.
+-- @return Actual value selected.
+--
+function ibv4:line_spacing_option (value)
+  if type (value) == "string" then
+    value = line_spacings_by_name[value]
+  end
+
+  local chosen, code = value_for_closest_key (line_spacings, value,
+                                              self.name .. ":line_spacing_option")
+	debug ("%s:line_spacing requested %f, chosen %f\n", self.name, value, chosen)
+  self:esc ("DLS%i", code)
+  return chosen
 end
 
 
