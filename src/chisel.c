@@ -107,6 +107,13 @@ chisel_lua_init (lua_State *L, int argc, char **argv)
     lua_pushnumber (L, g_repl);
     lua_setfield   (L, -2, "interactive");
 
+#if CHSL_CUPS
+    lua_pushboolean (L, 1);
+#else /* !CHSL_CUPS */
+    lua_pushboolean (L, 0);
+#endif /* CHSL_CUPS */
+    lua_setfield (L, -2, "has_cups");
+
     /* Set the "argv" and "options" tables */
     lua_newtable (L); /*: M argv */
     lua_newtable (L); /*: M argv options */
