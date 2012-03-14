@@ -115,11 +115,35 @@ fs_exists (lua_State *L)
 }
 
 
+/***
+Creates a symbolic link.
+
+@param target Path the symbolic link will point to.
+@param path Path where to create the symbolic link.
+@function symlink
+*/
+static int
+fs_symlink (lua_State *L)
+{
+    const char *path;
+    assert (L);
+
+    path = luaL_checkstring (L, 2);
+
+    if (symlink (luaL_checkstring (L, 1), path) != 0)
+        return fs_push_error (L, path);
+
+    lua_pushnumber (L, 0);
+    return 1;
+}
+
+
 static const luaL_Reg fs_funcs[] =
 {
 #define REG_ITEM(_name)  { #_name, fs_ ## _name }
     REG_ITEM (listdir),
     REG_ITEM (exists),
+    REG_ITEM (symlink),
 #undef REG_ITEM
     { NULL, NULL }
 };
