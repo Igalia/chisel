@@ -40,6 +40,8 @@ install_BIN_MODE := 755
 chisel_SRCS := src/chisel.c src/fs.c
 
 ifeq ($(CHSL_CONFIG_CUPS),1)
+chisel_SRCS += src/cups.c
+
 CUPS_CFLAGS  := $(shell cups-config --cflags)
 CUPS_LDFLAGS := $(shell cups-config --ldflags)
 CUPS_LDLIBS  := $(shell cups-config --libs)

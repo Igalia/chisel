@@ -287,6 +287,7 @@ repl (lua_State *L)
 
 /* Additional, chisel-provided Lua libraries */
 extern int lua_fs_open (lua_State*);
+extern int lua_cups_open (lua_State*);
 
 
 static int
@@ -301,6 +302,13 @@ lua_main (lua_State *L)
     luaL_openlibs (L);
     chisel_lua_init (L, argc, argv);
     luaL_requiref (L, "fs", lua_fs_open, 1);
+#ifdef HAVE_CUPS
+    /*
+     * Last argument is zero to not define the module in the global
+     * environment by default: it has to be require()'d.
+     */
+    luaL_requiref (L, "cups", lua_fs_open, 0);
+#endif /* HAVE_CUPS */
     lua_gc (L, LUA_GCRESTART, 0);
 
     if (g_repl && isatty (STDIN_FILENO)) {
