@@ -29,9 +29,6 @@ liblua_OBJS  := $(patsubst %.c,lua/%.o,$(liblua_SRCS))
 # We want the extras that Lua can use from Unix-like systems
 $(liblua_OBJS): CPPFLAGS += -DLUA_USE_POSIX
 
-chisel_SRCS  := $(wildcard src/*.c)
-chisel_OBJS  := $(patsubst %.c,%.o,$(chisel_SRCS))
-
 filters := texttochisel
 drivers := chisel-ppd
 
@@ -39,6 +36,8 @@ symlink_BIN      := $(filters) $(drivers)
 install_BIN      := chisel
 install_BIN_PATH := $(PREFIX)/bin
 install_BIN_MODE := 755
+
+chisel_SRCS := src/chisel.c src/fs.c
 
 ifeq ($(CHSL_CONFIG_CUPS),1)
 CUPS_CFLAGS  := $(shell cups-config --cflags)
@@ -69,6 +68,7 @@ $(eval $(call symlinks-target,CUPS_MIMETYPES))
 $(eval $(call symlinks-target,CUPS_MIMECONVS))
 endif
 
+chisel_OBJS := $(patsubst %.c,%.o,$(chisel_SRCS))
 
 install_LIB          := $(wildcard src/*.lua)
 install_LIB_PATH     := $(PREFIX)/share/chisel
@@ -78,7 +78,7 @@ install_SCRIPTS_PATH := $(install_LIB_PATH)/scripts
 all: $(install_BIN) $(filters) $(drivers)
 
 chisel: CFLAGS  += $(CUPS_CFLAGS)
-chisel: LDLIBS  += $(CUPS_LDLIBS) $(EXTRA_LDLIBS)
+chisel: LDLIBS  += $(CUPS_LDLIBS) $(EXTRA_LDLIBS) -lm
 chisel: LDFLAGS += $(CUPS_LDFLAGS)
 chisel: $(chisel_OBJS) $(liblua_OBJS)
 
