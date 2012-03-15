@@ -55,6 +55,7 @@ verbose ("chisel %s\n", chisel.version)
 debug   (" - libdir = %q\n", chisel.libdir)
 debug   (" - script = %q\n", chisel.script)
 debug   (" - loglevel = %q\n", chisel.version)
+debug   (" - has_cups = %s\n", chisel.has_cups)
 debug   (" - interactive = %i\n", chisel.interactive)
 
 
