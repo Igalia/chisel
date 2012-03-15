@@ -138,12 +138,36 @@ fs_symlink (lua_State *L)
 }
 
 
+/***
+Checks whether a path points to a directory.
+
+@param path Path to be checked.
+@function isdir
+*/
+static int
+fs_isdir (lua_State *L)
+{
+    const char *path;
+    struct stat sb;
+    assert (L);
+
+    path = luaL_checkstring (L, 1);
+
+    if (stat (path, &sb) != 0)
+        return fs_push_error (L, path);
+
+    lua_pushboolean (L, S_ISDIR (sb.st_mode));
+    return 1;
+}
+
+
 static const luaL_Reg fs_funcs[] =
 {
 #define REG_ITEM(_name)  { #_name, fs_ ## _name }
     REG_ITEM (listdir),
     REG_ITEM (exists),
     REG_ITEM (symlink),
+    REG_ITEM (isdir),
 #undef REG_ITEM
     { NULL, NULL }
 };
