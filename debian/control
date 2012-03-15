@@ -1,0 +1,26 @@
+Source: chisel
+Section: text
+Priority: optional
+Homepage: http://no-homepage.com
+Maintainer: Adrian Perez <aperez@igalia.com>
+Build-Depends: debhelper (>= 7),
+               libcups2-dev (>= 1.3),
+               libreadline-dev
+Standards-Version: 3.8.4
+
+Package: chisel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Braille embosser filters with CUPS support
+ Chisel is a Free Software set of tools and filters to use Braille
+ embossers in Unix systems. It can be used in conjunction with CUPS.
+
+Package: chisel-dbg
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, chisel (= ${binary:Version})
+Description: Braille embosser filters with CUPS support
+ Chisel is a Free Software set of tools and filters to use Braille
+ embossers in Unix systems. It can be used in conjunction with CUPS.
+ .
+ This package contains the binaries with debugging information. It
+ is only needed for development purposes.

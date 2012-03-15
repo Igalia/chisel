@@ -88,4 +88,9 @@ clean: clean-info
 clean-info:
 	$(cmd_print) CLEAN
 
-.PHONY: clean clean-info all install
+distclean: clean
+
+test: check
+check:
+
+.PHONY: clean clean-info all install distclean test check

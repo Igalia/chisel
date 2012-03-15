@@ -1,0 +1,12 @@
+#! /usr/bin/make -f
+
+export PREFIX = /usr
+
+%:
+	dh $@
+
+override_dh_strip:
+	dh_strip --dbg-package=chisel-dbg
+
+.PHONY: override_dh_strip
+
