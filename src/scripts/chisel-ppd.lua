@@ -14,8 +14,9 @@ end
 local function cmd_list ()
 	local lfmt = '"chisel:%s/%s" en "%s" "%s %s/chisel" "%s"'
 	for _, manufacturer in ipairs (fs.listdir (chisel.libdir .. "/data")) do
-		if manufacturer:sub (1, 1) ~= "_" then
-			for _, model in ipairs (fs.listdir (chisel.libdir .. "/data/" .. manufacturer)) do
+		local manufacturer_path = chisel.libdir .. "/data/" .. manufacturer
+		if manufacturer:sub (1, 1) ~= "_" and fs.isdir (manufacturer_path) then
+			for _, model in ipairs (fs.listdir (manufacturer_path)) do
 				if model:sub (1, 1) ~= "_" then
 					model = model:sub (1, -5) -- Remove ".lua" suffix
 					if chisel.options.plain then
