@@ -7,7 +7,12 @@
 --
 
 local function cmd_cat (device_id)
-	io.write (lib.printerdata.get (device_id):ppd ())
+  -- It is possible that the driver name is passed as a prefix. If that is
+  -- the case, remove it before calling printerdata.get()
+  if device_id:sub (1, # "chisel-ppd:") == "chisel-ppd:" then
+    device_id = device_id:sub (# "chisel-ppd:" + 1)
+  end
+  io.write (lib.printerdata.get (device_id):ppd ())
 end
 
 
