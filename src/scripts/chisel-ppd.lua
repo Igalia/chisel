@@ -12,7 +12,7 @@ end
 
 
 local function cmd_list ()
-	local lfmt = '"chisel:%s/%s" en "%s" "%s %s/chisel" "%s"'
+	local lfmt = '"chisel-ppd:%s/%s" en "%s" "%s %s/chisel" "%s"'
 	for _, manufacturer in ipairs (fs.listdir (chisel.libdir .. "/data")) do
 		local manufacturer_path = chisel.libdir .. "/data/" .. manufacturer
 		if manufacturer:sub (1, 1) ~= "_" and fs.isdir (manufacturer_path) then
