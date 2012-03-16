@@ -72,16 +72,27 @@ local ppd_template = {
 										 data.manufacturer, data.model)
 	end;
 
-	-- Filter command, for use with CUPS
-	function (data)
-		if data.output then
-			return sprintf ("*cupsVersion: 1.0\n\z
-			                 *cupsFilter: \"application/x-chisel-text 0 chisel device=%s\"",
-			                 data.output)
-		else
-			return "*% No 'output' option defined, skipping CUPS attributes."
-		end
-	end;
+  -- Filter command, and output mode, for use with CUPS. Also, the
+  -- chisel{ModelOutputMode,DeviceId} attributes (see comment below).
+  [[*cupsVersion: 1.2]];
+  [[*cupsFilter: "application/x-chisel-text 0 chisel"]];
+  function (data)
+    return sprintf ("*chiselDeviceId: \"%s\"", data.id)
+  end;
+  function (data)
+    if data.output then
+      -- XXX Maybe it would be better to use the cupsModelNumber attribute,
+      -- but it is an integer value and then it would be needed to keep a
+      -- deviceId <-> modelNumber mapping, and also generating unique
+      -- modelNumber atributes in a "stable" way that does not change
+      -- between invocations. Therefore, just add a chiselOutputMode
+      -- attribute (to be ignored by other applications), which the
+      -- backend could parse if needed.
+      return sprintf ("*chiselOutputMode: \"%s\"", data.output)
+    else
+      return "*% No 'output' option defined, skipping chiselDeviceId attribute"
+    end
+  end;
 
 	-- Color model
 	function (data)
@@ -289,6 +300,7 @@ local function _printerdata_get (name)
 		base[k] = v
 	end
 
+	base.id = name
 	return base
 end
 
