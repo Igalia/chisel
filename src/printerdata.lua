@@ -19,6 +19,11 @@ local ipairs   = ipairs
 local pairs    = pairs
 local pcall    = pcall
 local type     = type
+local isdir    = fs.isdir
+local listdir  = fs.listdir
+local imap     = lib.ml.imap
+local ifilter  = lib.ml.ifilter
+local extend   = lib.ml.extend
 
 
 local function ppd_attribute (ppdname, attrname, optional)
@@ -436,5 +441,59 @@ function printerdata.get (name)
 	return printerdata:clone (_printerdata_get (name))
 end;
 
+
+local function is_valid_manufacturer (item)
+  return item:sub (1, 1) ~= "_" and
+         isdir (chisel.libdir .. "/data/" .. item)
+end
+
+--- List supported devices and manufacturers.
+--
+-- @param manufacturer Omitting the argument, returns a list of all the
+-- manufacturers. When specifying the argument, the devices supported
+-- from a particular manufacturer are returned. Passing the string
+-- `"*"` as manufacturer will return _all_ devices of _all_
+-- manufacturers. *(Optional)*.
+--
+-- @return List with device names in `<manufacturer>/<device>` format.
+-- @function printerdata.list
+--
+local list_printerdatas
+function list_printerdatas (manufacturer)
+  if manufacturer == nil then
+    -- List all manufacturers
+    return ifilter (listdir (chisel.libdir .. "/data"), is_valid_manufacturer)
+  elseif manufacturer == "*" then
+    -- List all models of all manufacturers
+    local result = {}
+    for _, mf in ipairs (list_printerdatas ()) do
+      extend (result, list_printerdatas (mf))
+    end
+    return result
+  else
+    -- List models for a particular manufacturer
+    local function is_valid_printerdata (item)
+      return item:sub (1, 1) ~= "_" and
+             not isdir (chisel.libdir .. "/data/" .. manufacturer .. "/" .. item)
+    end
+
+    local function fix_name (item)
+      -- Prepend the manufacturer and remove the ".lua" suffix
+      return manufacturer .. "/" .. item:sub (1, -5)
+    end
+
+    if not is_valid_manufacturer (manufacturer) then
+      -- XXX Maybe would it be better to call error() here?
+      return {}
+    end
+
+    -- List files for the manufacturer directory, filter out invalid
+    -- names, and prepare the names in a format suitable for returning.
+    local files = listdir (chisel.libdir .. "/data/" .. manufacturer)
+    return imap (fix_name, ifilter (files, is_valid_printerdata))
+  end
+end
+
+printerdata.list = list_printerdatas
 
 return printerdata
