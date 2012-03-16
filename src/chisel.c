@@ -421,7 +421,7 @@ main (int argc, char *argv[])
     if (!g_repl && find_script ()) {
         fprintf (stderr,
                  "%s: could not find script '%s', checked locations:\n"
-                 "    - %s/%s.lua\n"
+                 "    - %s/scripts/%s.lua\n"
                  "    - %s\n",
                  argv[0],
                  g_script,
