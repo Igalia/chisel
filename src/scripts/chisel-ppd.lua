@@ -17,25 +17,19 @@ end
 
 
 local function cmd_list ()
-	local lfmt = '"chisel-ppd:%s/%s" en "%s" "%s %s/chisel" "%s"'
-	for _, manufacturer in ipairs (fs.listdir (chisel.libdir .. "/data")) do
-		local manufacturer_path = chisel.libdir .. "/data/" .. manufacturer
-		if manufacturer:sub (1, 1) ~= "_" and fs.isdir (manufacturer_path) then
-			for _, model in ipairs (fs.listdir (manufacturer_path)) do
-				if model:sub (1, 1) ~= "_" then
-					model = model:sub (1, -5) -- Remove ".lua" suffix
-					if chisel.options.plain then
-						print (manufacturer .. "/" .. model)
-					else
-						local d = lib.printerdata.get (manufacturer .. "/" .. model)
-						print (lfmt:format (manufacturer, model,
-						                    d.manufacturer,
-						                    d.manufacturer, d.model,
-						                    d.ieee1284_id or ""))
-					end
-				end
-			end
-		end
+  local all = lib.printerdata.list ("*")
+  if chisel.options.plain then
+    print (table.concat (all, "\n"))
+  else
+	  local lfmt = '"chisel-ppd:%s" en "%s" "%s %s/chisel" "%s"'
+	  for _, item in ipairs (all) do
+	    local d = lib.printerdata.get (item)
+	    print (lfmt:format (item,
+	                        d.manufacturer,
+	                        d.manufacturer,
+	                        d.model,
+	                        d.ieee1284_id))
+    end
 	end
 end
 
