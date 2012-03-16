@@ -14,11 +14,11 @@ local M = {}
 -- @return Table-list.
 --
 function M.dir (t)
-	local result = {}
+	local r = {}
 	for k, _ in pairs (t) do
-		table.insert (result, k)
+		r[#r+1] = k
 	end
-	return result
+	return r
 end
 
 

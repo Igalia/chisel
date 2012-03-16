@@ -8,6 +8,7 @@
 --
 
 local M = {}
+local tinsert = table.insert
 
 --- Base element.
 -- @section base_element
@@ -124,9 +125,9 @@ M.element = object:clone
 			self.children = {}
 		end
 		if position ~= nil then
-			table.insert (self.children, position, element)
+			tinsert (self.children, position, element)
 		else
-			table.insert (self.children, element)
+			self.children[#self.children+1] = element
 		end
 		return self
 	end;

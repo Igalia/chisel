@@ -12,7 +12,6 @@
 
 local sprintf  = string.format
 local tconcat  = table.concat
-local tinsert  = table.insert
 local loadfile = loadfile
 local tostring = tostring
 local ipairs   = ipairs
@@ -131,8 +130,8 @@ local ppd_template = {
 		local result = {}
 		for k, opt in pairs (data.options) do
 			debug ("%s, %s, %s\n", k, opt, opt.ppd)
-			tinsert (result, sprintf ("\n*%% options.%s", k))
-			tinsert (result, opt:ppd ())
+			result[#result+1] = sprintf ("\n*%% options.%s", k)
+			result[#result+1] = opt:ppd ()
 		end
 
 		return tconcat (result, "\n")
@@ -209,33 +208,33 @@ local printeroption = object:clone
 		local r = {}
 
 		if self.comment then
-			tinsert (r, sprintf ("*%% %s", self.comment))
+			r[#r+1] = sprintf ("*%% %s", self.comment)
 		end
 
 		if self.ui then
-			tinsert (r, sprintf ("*OpenUI *%s/%s: %s", name, desc, self.ppd_kind))
+			r[#r+1] = sprintf ("*OpenUI *%s/%s: %s", name, desc, self.ppd_kind)
 		end
 
 		if self.default then
 			if self.ppd_default then
-				tinsert (r, sprintf ("*%s: %s", self.ppd_default, self.default))
+				r[#r+1] = sprintf ("*%s: %s", self.ppd_default, self.default)
 			else
-				tinsert (r, sprintf ("*Default%s: %s", name, self.default))
+				r[#r+1] = sprintf ("*Default%s: %s", name, self.default)
 			end
 		end
 
 		if self.values then
 			for k, v in pairs (self.values) do
 				if type (v) == "table" then
-					tinsert (r, sprintf ("*%s %s/%s: \"%s\"", name, k, v[1], v[2]))
+					r[#r+1] = sprintf ("*%s %s/%s: \"%s\"", name, k, v[1], v[2])
 				else
-					tinsert (r, sprintf ("*%s %s/%s: \"\"", name, k, v))
+					r[#r+1] = sprintf ("*%s %s/%s: \"\"", name, k, v)
 				end
 			end
 		end
 
 		if self.ui then
-			tinsert (r, sprintf ("*CloseUI: *%s\n", name))
+			r[#r+1] = sprintf ("*CloseUI: *%s\n", name)
 		end
 
 		return tconcat (r, "\n")
@@ -437,7 +436,7 @@ local printerdata = object:clone
 			else
 				v = tostring (v)
 			end
-			tinsert (result, v)
+			result[#result+1] = v
 		end
 		return tconcat (result, "\n")
 	end;
