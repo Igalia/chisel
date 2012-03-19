@@ -74,7 +74,7 @@ local ppd_template = {
   -- Filter command, and output mode, for use with CUPS. Also, the
   -- chisel{ModelOutputMode,DeviceId} attributes (see comment below).
   [[*cupsVersion: 1.2]];
-  [[*cupsFilter: "application/x-chisel-text 0 chisel"]];
+  [[*cupsFilter: "application/x-chisel-text 0 chiseltodev"]];
   function (data)
     return sprintf ("*chiselDeviceId: \"%s\"", data.id)
   end;

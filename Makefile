@@ -29,7 +29,7 @@ liblua_OBJS  := $(patsubst %.c,lua/%.o,$(liblua_SRCS))
 # We want the extras that Lua can use from Unix-like systems
 $(liblua_OBJS): CPPFLAGS += -DLUA_USE_POSIX
 
-filters := texttochisel
+filters := texttochisel chiseltodev
 drivers := chisel-ppd
 
 symlink_BIN      := $(filters) $(drivers)
@@ -48,13 +48,13 @@ CUPS_LDLIBS  := $(shell cups-config --libs)
 CUPS_BINDIR  := $(shell cups-config --serverbin)
 CUPS_DATADIR := $(shell cups-config --datadir)
 
-symlinks_CUPS_DRIVERS        := $(drivers)
-symlinks_CUPS_DRIVERS_PATH   := $(CUPS_BINDIR)/driver
-symlinks_CUPS_DRIVERS_TARGET := $(PREFIX)/bin/chisel
+symlinks_CUPS_DRIVERS          := $(drivers)
+symlinks_CUPS_DRIVERS_PATH     := $(CUPS_BINDIR)/driver
+symlinks_CUPS_DRIVERS_TARGET   := $(PREFIX)/bin/chisel
 
-symlinks_CUPS_FILTERS        := $(filters)
-symlinks_CUPS_FILTERS_PATH   := $(CUPS_BINDIR)/filter
-symlinks_CUPS_FILTERS_TARGET := $(PREFIX)/bin/chisel
+install_CUPS_FILTERS           := $(filters)
+install_CUPS_FILTERS_PATH      := $(CUPS_BINDIR)/filter
+install_CUPS_FILTERS_MODE      := 755
 
 symlinks_CUPS_MIMETYPES        := chisel.types
 symlinks_CUPS_MIMETYPES_PATH   := $(CUPS_DATADIR)/mime
@@ -64,8 +64,8 @@ symlinks_CUPS_MIMECONVS        := chisel.convs
 symlinks_CUPS_MIMECONVS_PATH   := $(CUPS_DATADIR)/mime
 symlinks_CUPS_MIMECONVS_TARGET := $(PREFIX)/share/chisel/data/mime.convs
 
+$(eval $(call install-target,CUPS_FILTERS))
 $(eval $(call symlinks-target,CUPS_DRIVERS))
-$(eval $(call symlinks-target,CUPS_FILTERS))
 $(eval $(call symlinks-target,CUPS_MIMETYPES))
 $(eval $(call symlinks-target,CUPS_MIMECONVS))
 endif
@@ -87,9 +87,9 @@ chisel: $(chisel_OBJS) $(liblua_OBJS)
 # If the configuration changes, all object files should be rebuilt
 $(chisel_OBJS): Makefile.config
 
-$(filters) $(drivers): chisel
+$(drivers): chisel
 	$(cmd_print) SYMLINKS .
-	for i in $(filters) $(drivers) ; do \
+	for i in $(drivers) ; do \
 		ln -sf chisel $$i ; \
 	done
 
@@ -111,7 +111,7 @@ clean:
 	$(RM) $(chisel_OBJS)
 	$(RM) $(liblua_OBJS)
 	$(RM) chisel
-	$(RM) $(filters) $(drivers)
+	$(RM) $(drivers)
 
 $(eval $(call install-target,BIN))
 $(eval $(call install-target,LIB))

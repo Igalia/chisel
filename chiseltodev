@@ -1,0 +1,11 @@
+#! /bin/sh
+#
+# texttochisel
+# Copyright (C) 2012 Adrian Perez <aperez@igalia.com>
+#
+# Distributed under terms of the MIT license.
+
+# CUPS passes the parinter name in argv[0], so it is needed to tell
+# chisel manually which script to run instead of argv[0].
+#
+exec chisel -S chiseltodev "$@"
