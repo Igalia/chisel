@@ -40,7 +40,10 @@ cups_push_error (lua_State *L, cups_sc_status_t status)
 
 
 /***
-@return The IEEE-1284 device identifier for the output device, as a string.
+Obtains the IEEE-1284 device identifier for the current output device.
+
+@return The IEEE-1284 device identifier, as a string.
+@function cups.get_device_id
 */
 static int
 cups_get_device_id (lua_State *L)
