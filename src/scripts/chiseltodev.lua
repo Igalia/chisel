@@ -10,22 +10,24 @@
 
 local get_device = lib.ml.safe (lib.device.get)
 
-debug("running in backend mode\n")
-
 -- Get output device. This is done as first step, so it is possible
 -- to tell the user early whether the chosen device is not available.
 --
-dev, err = get_device (chisel.options.device)
-if dev == nil then
-  if chisel.loglevel > 0 then
-    chisel.die ("Unknown device name %q\n%s\n",
-                chisel.options.device or "",
-                err)
-  else
-    chisel.die ("Unknown device name %q\n",
-                chisel.options.device or "")
+if chisel.options.device then
+  dev, err = get_device (chisel.options.device)
+  if dev == nil then
+    if chisel.loglevel > 0 then
+      chisel.die ("Unknown device name %q\n%s\n",
+                  chisel.options.device or "",
+                  err)
+    else
+      chisel.die ("Unknown device name %q\n",
+                  chisel.options.device or "")
+    end
   end
-end
+else
+  chisel.die ("Could not guess output device\n")
+else
 
 debug ("device: %s (%s)\n", dev, dev.name)
 
