@@ -9,10 +9,31 @@ local validate_options = lib.ml.safe (lib.loader.validate_options)
 local optionformatq = "    %s = %q;"
 local optionformats = "    %s = %s;"
 
--- Validate options passed in the command line
-local options, err = validate_options (chisel.options)
-if options == nil then
-	chisel.die ("texttochisel: %s\n", err)
+-- Check whether the process is running as a CUPS filter, and if a file
+-- name is given in argv[6], pick that as input file instead of stdin.
+--
+-- TODO Make this check more robust.
+--
+local running_on_cups = os.getenv ("CUPS_SERVERROOT") ~= nil and
+                        #chisel.argv >= 5
+
+local options
+if running_on_cups and chisel.argv[6] ~= nil then
+  -- Reassign stdin
+  io.input (chisel.argv[6])
+
+  -- CUPS passes the number of copies as 4th argument.
+  options = {}
+  options.copies = tonumber (chisel.argv[4])
+
+  -- TODO CUPS passes job options in argv[5]
+else
+  -- Validate options passed in the command line
+  local err
+  options, err = validate_options (chisel.options)
+  if options == nil then
+    chisel.die ("texttochisel: %s\n", err)
+  end
 end
 
 -- header
