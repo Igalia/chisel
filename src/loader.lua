@@ -46,6 +46,18 @@ local doc_options = {
   -- Dot distance is a number, in millimeters.
   dot_distance = tonumber;
 
+  -- Characters per line.
+  characters_per_line = tonumber;
+
+  -- Lines per page.
+  lines_per_page = tonumber;
+
+  -- Binding margin (in characters).
+  binding_margin = tonumber;
+
+  -- Top margin (in lines).
+  top_margin = tonumber;
+
   -- Line spacing may be "single", "normal" (translated to "single"),
   -- "double" or a number in millimeters.
   line_spacing = function (value)

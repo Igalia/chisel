@@ -1,0 +1,12 @@
+#!chisel
+
+-- Sets margins and stuff.
+options {
+  top_margin          =  2; -- Leave 2 empty lines at the top.
+  binding_margin      =  4; -- Leave 4 empty character cells at the left.
+  lines_per_page      = 10; -- Leave some space empty at the bottom.
+  characters_per_line = 25; -- Do not make very long lines
+}
+
+document {}
+

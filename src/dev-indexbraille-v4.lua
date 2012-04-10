@@ -136,6 +136,59 @@ function ibv4:copies_option (value)
 end
 
 
+--- Sends a top-margin option.
+--
+-- @param value Number of empty lines to leave at the top of pages.
+--
+function ibv4:top_margin_option (value)
+  if value < 0 then
+    error (("%s: top_margin = %i is negative"):format (self.name, value))
+  end
+  debug ("%s:top_margin %i\n", self.name, value)
+  self:esc ("DTM%i", value)
+end
+
+
+--- Sends a binding-margin option.
+--
+-- @param value Number of empty character cells to leave at the left
+-- margin in each line.
+--
+function ibv4:binding_margin_option (value)
+  if value < 0 then
+    error (("%s: binding_margin = %i is negative"):format (self.name, value))
+  end
+  debug ("%s:binding_margin %i\n", self.name, value)
+  self:esc ("DBI%i", value)
+end
+
+
+--- Sends a lines-per-page option.
+--
+-- @param value Number of lines to fit in each page.
+--
+function ibv4:lines_per_page_option (value)
+  if value < 0 then
+    error (("%s: lines_per_page = %i is negative"):format (self.name, value))
+  end
+  debug ("%s:lines_per_page %i\n", self.name, value)
+  self:esc ("DLP%i", value)
+end
+
+
+--- Sends a character-per-line option.
+--
+-- @param value Number of character to fit in each line.
+--
+function ibv4:characters_per_line_option (value)
+  if value < 0 then
+    error (("%s: characters_per_line = %i is negative"):format (self.name, value))
+  end
+  debug ("%s:characters_per_line %i\n", self.name, value)
+  self:esc ("DCH%i", value)
+end
+
+
 function ibv4:begin_document (node)
 	-- The version parameter does not control any setting, but allows to
 	-- track which combiation of driver/version generated the data stream.

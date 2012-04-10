@@ -30,6 +30,16 @@ options are recognized:
 (or `"single"`, which has the same meaning), `"double"` or a numeric value,
 interpreted as the space between lines in millimeters.
 
+* `characters_per_line`: Number of characters to be fitted in each line.
+
+* `lines_per_page`: Number of lines that are to be fitted in each page.
+
+* `binding_margin`: Amount of margin to leave on the left side of pages,
+most of the time for binding purposes. This is given as the number of
+character cells left empty at the beginning of the line.
+
+* `top_margin`: Number of lines to leave empty at the top of each page.
+
 None of the options is mandatory. If not specified, the values used for
 those options are those considered as reasonable defaults for the output
 device in use.
