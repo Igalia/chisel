@@ -27,7 +27,7 @@ if chisel.options.device then
   end
 else
   chisel.die ("Could not guess output device\n")
-else
+end
 
 debug ("device: %s (%s)\n", dev, dev.name)
 
