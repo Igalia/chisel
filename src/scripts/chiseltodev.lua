@@ -138,6 +138,16 @@ if doc == nil then
   end
 end
 
+-- Apply the extra options
+options_overrides, err = lib.loader.validate_options (options_overrides)
+if options_overrides == nil then
+  chisel.die ("Invalid options: %s", err)
+end
+
+for name, value in pairs (options_overrides) do
+  doc.options[name] = value
+end
+
 -- Output document to the device
 doc:render (dev)
 
