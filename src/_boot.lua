@@ -54,6 +54,8 @@ debug = function (format, ...) _log(2, format, ...) end
 verbose ("chisel %s\n", chisel.version)
 debug   (" - libdir = %q\n", chisel.libdir)
 debug   (" - script = %q\n", chisel.script)
+debug   (" - uid/gid = %i/%i\n", chisel.uid, chisel.gid)
+debug   (" - pid/ppid = %i/%i\n", chisel.pid, chisel.ppid)
 debug   (" - loglevel = %q\n", chisel.version)
 debug   (" - has_cups = %s\n", chisel.has_cups)
 debug   (" - interactive = %i\n", chisel.interactive)

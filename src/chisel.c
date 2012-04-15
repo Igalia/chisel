@@ -106,6 +106,14 @@ chisel_lua_init (lua_State *L, int argc, char **argv)
     lua_setfield   (L, -2, "loglevel");
     lua_pushnumber (L, g_repl);
     lua_setfield   (L, -2, "interactive");
+    lua_pushnumber (L, getuid ());
+    lua_setfield   (L, -2, "uid");
+    lua_pushnumber (L, getgid ());
+    lua_setfield   (L, -2, "gid");
+    lua_pushnumber (L, getpid ());
+    lua_setfield   (L, -2, "pid");
+    lua_pushnumber (L, getppid ());
+    lua_setfield   (L, -2, "ppid");
 
 #if CHSL_CUPS
     lua_pushboolean (L, 1);
