@@ -38,7 +38,7 @@ end
 -- @param format Format string.
 -- @param ... Format string arguments.
 --
-verbose = function (format, ...) _log(1, format, ...) end
+log_verbose = function (format, ...) _log(1, format, ...) end
 
 --- Send a debug message to stderr.
 --
@@ -48,17 +48,17 @@ verbose = function (format, ...) _log(1, format, ...) end
 -- @param format Format string.
 -- @param ... Format string arguments.
 --
-debug = function (format, ...) _log(2, format, ...) end
+log_debug = function (format, ...) _log(2, format, ...) end
 
 
-verbose ("chisel %s\n", chisel.version)
-debug   (" - libdir = %q\n", chisel.libdir)
-debug   (" - script = %q\n", chisel.script)
-debug   (" - uid/gid = %i/%i\n", chisel.uid, chisel.gid)
-debug   (" - pid/ppid = %i/%i\n", chisel.pid, chisel.ppid)
-debug   (" - loglevel = %q\n", chisel.version)
-debug   (" - has_cups = %s\n", chisel.has_cups)
-debug   (" - interactive = %i\n", chisel.interactive)
+log_verbose ("chisel %s\n", chisel.version)
+log_debug (" - libdir = %q\n", chisel.libdir)
+log_debug (" - script = %q\n", chisel.script)
+log_debug (" - uid/gid = %i/%i\n", chisel.uid, chisel.gid)
+log_debug (" - pid/ppid = %i/%i\n", chisel.pid, chisel.ppid)
+log_debug (" - loglevel = %q\n", chisel.version)
+log_debug (" - has_cups = %s\n", chisel.has_cups)
+log_debug (" - interactive = %i\n", chisel.interactive)
 
 
 --- Formats a message to the standard error stream and exits.

@@ -129,7 +129,7 @@ local ppd_template = {
 
 		local result = {}
 		for k, opt in pairs (data.options) do
-			debug ("%s, %s, %s\n", k, opt, opt.ppd)
+			log_debug ("%s, %s, %s\n", k, opt, opt.ppd)
 			result[#result+1] = sprintf ("\n*%% options.%s", k)
 			result[#result+1] = opt:ppd ()
 		end
@@ -317,11 +317,11 @@ local function option_gather_function (name, builtins, optclass)
 				if builtins[v] == nil then
 					error ("unknown bultin " .. name .. " '" .. v .. "'")
 				end
-				debug (" adding builtin %s '%s'\n", name, v)
+				log_debug (" adding builtin %s '%s'\n", name, v)
 				vals[v] = builtins[v]
 			else
 				-- Pick value as-is
-				debug (" adding %s '%s' (%s)\n", name, k, v)
+				log_debug (" adding %s '%s' (%s)\n", name, k, v)
 				vals[k] = v
 			end
 		end
@@ -377,12 +377,12 @@ end
 local printerdata = object:clone
 {
 	_init = function (self)
-		debug ("printerdata:_init: %s/%s\n", self.manufacturer, self.model)
+		log_debug ("printerdata:_init: %s/%s\n", self.manufacturer, self.model)
 
 		if self.options then
 			for k, v in pairs (self.options) do
 				local opt_init_func = self["_init_option_" .. k]
-				debug ("printerdata:_init_option_%s: %s\n", k, opt_init_func)
+				log_debug ("printerdata:_init_option_%s: %s\n", k, opt_init_func)
 				if opt_init_func then
 					self.options[k] = opt_init_func (self, v)
 				end

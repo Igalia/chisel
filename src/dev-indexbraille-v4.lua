@@ -92,7 +92,7 @@ end
 function ibv4:dot_distance_option (value)
   local chosen, code = value_for_closest_key (dot_distances, value,
                                               self.name .. ":dot_distance_option")
-	debug ("%s:dot_distance requested %f, chosen %f\n", self.name, value, chosen)
+	log_debug ("%s:dot_distance requested %f, chosen %f\n", self.name, value, chosen)
 	self:esc ("DGD%i", code)
 	return chosen
 end
@@ -112,7 +112,7 @@ function ibv4:line_spacing_option (value)
 
   local chosen, code = value_for_closest_key (line_spacings, value,
                                               self.name .. ":line_spacing_option")
-	debug ("%s:line_spacing requested %f, chosen %f\n", self.name, value, chosen)
+	log_debug ("%s:line_spacing requested %f, chosen %f\n", self.name, value, chosen)
   self:esc ("DLS%i", code)
   return chosen
 end
@@ -130,7 +130,7 @@ function ibv4:copies_option (value)
     error (("%s: copies = %i out of the 1-10.000 range"):format (self.name, value))
   end
   if value > 2 then
-    debug ("%s:copies %i\n", self.name, value)
+    log_debug ("%s:copies %i\n", self.name, value)
     self:esc ("DMC%i", value)
   end
 end
@@ -144,7 +144,7 @@ function ibv4:top_margin_option (value)
   if value < 0 then
     error (("%s: top_margin = %i is negative"):format (self.name, value))
   end
-  debug ("%s:top_margin %i\n", self.name, value)
+  log_debug ("%s:top_margin %i\n", self.name, value)
   self:esc ("DTM%i", value)
 end
 
@@ -158,7 +158,7 @@ function ibv4:binding_margin_option (value)
   if value < 0 then
     error (("%s: binding_margin = %i is negative"):format (self.name, value))
   end
-  debug ("%s:binding_margin %i\n", self.name, value)
+  log_debug ("%s:binding_margin %i\n", self.name, value)
   self:esc ("DBI%i", value)
 end
 
@@ -171,7 +171,7 @@ function ibv4:lines_per_page_option (value)
   if value < 0 then
     error (("%s: lines_per_page = %i is negative"):format (self.name, value))
   end
-  debug ("%s:lines_per_page %i\n", self.name, value)
+  log_debug ("%s:lines_per_page %i\n", self.name, value)
   self:esc ("DLP%i", value)
 end
 
@@ -184,7 +184,7 @@ function ibv4:characters_per_line_option (value)
   if value < 0 then
     error (("%s: characters_per_line = %i is negative"):format (self.name, value))
   end
-  debug ("%s:characters_per_line %i\n", self.name, value)
+  log_debug ("%s:characters_per_line %i\n", self.name, value)
   self:esc ("DCH%i", value)
 end
 
@@ -201,7 +201,7 @@ function ibv4:begin_document (node)
 			if callable (method) then
 				method (self, value)
 			else
-				debug ("%s: Ignoring option %q\n", self.name, option)
+				log_debug ("%s: Ignoring option %q\n", self.name, option)
 			end
 		end
 	end
