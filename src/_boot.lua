@@ -14,7 +14,7 @@ local exit         = os.exit
 local require      = require
 local assert       = assert
 local type         = type
-local pairs        = pairs
+local pairs,ipairs = pairs,ipairs
 local setmetatable = setmetatable
 local getmetatable = getmetatable
 
@@ -210,9 +210,9 @@ setmetatable (lib, { __index = function (_, k) return require (k) end })
 -- from the "replutils" module into the global namespace.
 --
 if chisel.interactive then
-	for k, v in pairs (lib.replutils) do
-		if type (v) == "function" then
-			_G[k] = v
-		end
-	end
+  local util = lib.util
+  local imports = {"dir", "pprint"}
+  for _, name in ipairs (imports) do
+    _G[name] = lib.util[name]
+  end
 end
