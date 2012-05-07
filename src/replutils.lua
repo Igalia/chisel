@@ -42,7 +42,7 @@ function pprint.table (t)
 	for i, v in pairs (t) do
 		local ppv = (pprint[type (v)] or tostring) (v)
 		if type (v) == "number" then
-			result = result .. string.format ("[%i] = %s, ", i, ppv)
+			result = result .. string.format ("[%s] = %s, ", i, ppv)
 		elseif type (v) == "string" then
 			result = result .. string.format ("[%q] = %s, ", i, ppv)
 		else
