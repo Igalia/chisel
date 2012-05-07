@@ -129,11 +129,11 @@ object = {}
 function object:clone (t)
 	local clone = {}
 	setmetatable(clone, { __index = self })
-	if type (t) == "table" then
-		clone:extend (t)
-	end
 	if clone._init then
 		clone:_init ()
+	end
+	if type (t) == "table" then
+		clone:extend (t)
 	end
 	return clone
 end
