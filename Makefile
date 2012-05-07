@@ -87,13 +87,13 @@ chisel: $(chisel_OBJS) $(liblua_OBJS)
 # If the configuration changes, all object files should be rebuilt
 $(chisel_OBJS): Makefile.config
 
-$(drivers): chisel
+$(drivers) chisel-ut: chisel
 	$(cmd_print) SYMLINKS .
-	for i in $(drivers) ; do \
+	for i in $(drivers) chisel-ut ; do \
 		ln -sf chisel $$i ; \
 	done
 
-.NOTPARALLEL: $(filters) $(drivers)
+.NOTPARALLEL: $(filters) $(drivers) chisel-ut
 
 install: install-data
 
@@ -110,10 +110,15 @@ install-data:
 clean:
 	$(RM) $(chisel_OBJS)
 	$(RM) $(liblua_OBJS)
-	$(RM) chisel
+	$(RM) chisel chisel-ut
 	$(RM) $(drivers)
 
 $(eval $(call install-target,BIN))
 $(eval $(call install-target,LIB))
 $(eval $(call install-target,SCRIPTS))
 
+
+test: chisel-ut
+	@./chisel-ut -L src ut/*.lua
+
+.PHONY: test
