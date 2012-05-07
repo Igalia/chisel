@@ -192,6 +192,27 @@ M.document = M.element:clone
 	end;
 }
 
+
+--- Grouping elements
+-- @section grouping_elements
+
+--- Document part.
+--
+-- A document part is a fragment of a document to which different options
+-- that the global, document-level ones.
+--
+-- @table part
+--
+M.part = M.element:clone
+{
+  --- Renders a part.
+  -- @param device Output @{device}.
+  -- @function part:render
+  render = function (self, device)
+    self:walk ("part", device)
+  end;
+}
+
 --- Content elements
 -- @section content_elements
 

@@ -28,6 +28,12 @@ function doc_funcs.document (t)
 	return T.document:clone { children = t }
 end
 
+function doc_funcs.part (options)
+  return function (t)
+    return T.part:clone { options = options, children = t }
+  end
+end
+
 
 local function tointeger (value)
   local number  = tonumber (value)

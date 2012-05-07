@@ -54,7 +54,33 @@ The top-level element is `document`:
     }
 
 Those elements contain an arbitrary number of [content
-elements](#Content_elements).
+elements](#Content_elements) and [grouping elements](#Grouping_elements).
+
+
+## Grouping elements
+
+### `part`
+
+Document tree element: `doctree.part`
+
+    part {
+      dot_distance = 2.5;
+      -- more options...
+    } {
+      text "Foo";
+      -- more content or grouping elements...
+    }
+
+Parts may contain both other grouping elements and [content
+elements](#Content_elements). Parts have two arguments:
+
+* A set of options to be applied to the contents of the part. Valid options
+are the same as for the `options` top-level element. The options given will
+override the global document options  for the content *inside* the part.
+Note that some output devices may not be able to set certain options for
+a document part, actual outcome depends on the capabilities of the hardware.
+
+* The contents of the part.
 
 
 ## Content elements
