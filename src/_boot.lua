@@ -56,7 +56,7 @@ log_debug (" - libdir = %q\n", chisel.libdir)
 log_debug (" - script = %q\n", chisel.script)
 log_debug (" - uid/gid = %i/%i\n", chisel.uid, chisel.gid)
 log_debug (" - pid/ppid = %i/%i\n", chisel.pid, chisel.ppid)
-log_debug (" - loglevel = %q\n", chisel.version)
+log_debug (" - loglevel = %i\n", chisel.loglevel)
 log_debug (" - has_cups = %s\n", chisel.has_cups)
 log_debug (" - interactive = %i\n", chisel.interactive)
 
