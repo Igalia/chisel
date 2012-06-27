@@ -18,7 +18,7 @@ local io_write = io.write
 --
 -- @section device
 --
-local device = object:clone
+local device = object:extend
 {
 	--- Writes data to the backend.
 	--
@@ -58,7 +58,7 @@ local device = object:clone
 	-- @name device.get
 	--
 	get = function (name, writef)
-		local dev = lib["dev-" .. name]:clone ()
+		local dev = lib["dev-" .. name]:clone () :init ()
 		if writef ~= nil then
 			dev.write = writef
 		end

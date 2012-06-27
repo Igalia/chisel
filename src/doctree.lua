@@ -29,7 +29,7 @@ local tinsert = table.insert
 --
 -- @table element
 --
-M.element = object:clone
+M.element = object:extend
 {
 	-- Arbitrary data payload. Usage depends on the subclass.
 	data = "";
@@ -182,7 +182,7 @@ M.element = object:clone
 --
 -- @table document
 --
-M.document = M.element:clone
+M.document = M.element:extend
 {
 	--- Renders a document.
 	-- @param device Output @{device}.
@@ -203,7 +203,7 @@ M.document = M.element:clone
 --
 -- @table part
 --
-M.part = M.element:clone
+M.part = M.element:extend
 {
   --- Renders a part.
   -- @param device Output @{device}.
@@ -223,7 +223,7 @@ M.part = M.element:clone
 --
 -- @table text
 --
-M.text = M.element:clone
+M.text = M.element:extend
 {
 	--- Renders text.
 	-- @param device Output @{device}.
@@ -248,7 +248,8 @@ M.text = M.element:clone
 --
 -- @table raw
 --
-M.raw = M.element:clone {
+M.raw = M.element:extend
+{
 	--- Reders raw data.
 	-- @param device Output @{device}.
 	-- @function raw:render

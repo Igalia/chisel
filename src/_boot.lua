@@ -84,17 +84,14 @@ end
 -- there is no *classes* as such, just objects were cloned from
 -- other objects.
 --
--- If an object has an `_init` method, it will be called on cloned
--- objects by @{object:clone}.
---
 -- A typical example on how to use the system would be:
 --
--- 	animal = object:clone {
+-- 	animal = object:extend {
 --		what = function (self)
 --			return "This is " .. self.name
 --		end;
 --	}
---	cat = animal:clone {
+--	cat = animal:extend {
 --		what = function (self)
 --			return "Meoooww! - Me iz " .. self.name
 --		end;
@@ -120,38 +117,23 @@ object = {}
 -- be passed (n.b. it is equivalent to call @{object:extend} on the
 -- returned object).
 --
--- If the base object (or one of the bases in the hierarchy) has an
--- `_init` method, it will be called on the new (cloned) object.
---
 -- @param t Table with additional attributes (optional).
 -- @return New cloned object.
 --
 function object:clone (t)
-	local clone = {}
-	setmetatable(clone, { __index = self })
-	if clone._init then
-		clone:_init ()
-	end
-	if type (t) == "table" then
-		clone:extend (t)
-	end
-	return clone
+  local clone = {}
+  setmetatable (clone, { __index = self })
+  if type (t) == "table" then
+    for k, v in pairs (t) do
+      clone[k] = v
+    end
+  end
+  return clone
 end
 
---- Extends an object with the content of another object or table.
+--- Alias for @{object:clone}
 --
--- Copies all the *(key, value)* pairs from the passed table to the
--- object. Note that only a shallow copy is done.
---
--- @param t Table from where to copy elements.
--- @return The object itself, to allow chained calls.
---
-function object:extend (t)
-	for k, v in pairs (t) do
-		self[k] = v
-	end
-	return self
-end
+object.extend = object.clone
 
 --- Gets the prototype of an object.
 --

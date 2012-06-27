@@ -58,7 +58,7 @@ end
 --
 -- @table ibv4
 --
-local ibv4 = lib.device:clone ()
+local ibv4 = lib.device:extend ()
 
 --- Device name.
 ibv4.name = "indexbraille-v4"

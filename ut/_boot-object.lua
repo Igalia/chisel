@@ -32,13 +32,6 @@ function test_clone_extend ()
   assert_equal (nil, o1.bar)
 end
 
-function test_extend ()
-  -- Extending after clone also overwrites attributes
-  local o = object:clone { a = 1, b = 2 } :extend { a = 42 }
-  assert_equal (42, o.a)
-  assert_equal (2,  o.b)
-end
-
 function test_derives ()
   local animal = object:clone ()
   local person = animal:clone ()
@@ -50,30 +43,5 @@ function test_derives ()
   assert_true  (cat:derives (animal))
   assert_false (cat:derives (user))
   assert_false (cat:derives (person))
-end
-
-function test__init_on_clone ()
-  local _init_called = false
-  local o = object:clone {
-    _init = function (self)
-      _init_called = true;
-    end;
-  }
-
-  assert_false (_init_called)
-  o:clone ()
-  assert_true (_init_called)
-end
-
-function test__init_later ()
-  local _init_called = false
-  local o = object:clone ()
-  function o:_init ()
-    _init_called = true
-  end
-
-  assert_false (_init_called)
-  o:clone ()
-  assert_true (_init_called)
 end
 

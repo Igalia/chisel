@@ -196,7 +196,7 @@ local builtin_media =
 --
 -- @table printeroption
 --
-local printeroption = object:clone
+local printeroption = object:extend
 {
 	--- Generate a code snippet suitable for inclusion in a PPD.
 	--
@@ -247,27 +247,27 @@ local printeroption = object:clone
 
 local option_class =
 {
-	pagesize = printeroption:clone
+	pagesize = printeroption:extend
 	{
 		name     = "PageSize";
 		desc     = "Media Size";
 		ppd_kind = "PickOne";
 	};
 
-	pageregion = printeroption:clone
+	pageregion = printeroption:extend
 	{
 		name     = "PageRegion";
 		ppd_kind = "PickOne";
 	};
 
-	duplex = printeroption:clone
+	duplex = printeroption:extend
 	{
 		name     = "Duplex";
 		ppd_kind = "PickOne";
 	};
 
-	paperdimension = printeroption:clone { name = "PaperDimension"; ui = false };
-	imageablearea  = printeroption:clone { name = "ImageableArea" ; ui = false };
+	paperdimension = printeroption:extend { name = "PaperDimension"; ui = false };
+	imageablearea  = printeroption:extend { name = "ImageableArea" ; ui = false };
 }
 
 
@@ -374,10 +374,10 @@ end
 --
 -- @table printerdata
 --
-local printerdata = object:clone
+local printerdata = object:extend
 {
-	_init = function (self)
-		log_debug ("printerdata:_init: %s/%s\n", self.manufacturer, self.model)
+	init = function (self)
+		log_debug ("printerdata:init: %s/%s\n", self.manufacturer, self.model)
 
 		if self.options then
 			for k, v in pairs (self.options) do
@@ -449,7 +449,7 @@ local printerdata = object:clone
 -- @function printerdata.get
 --
 function printerdata.get (name)
-	return printerdata:clone (_printerdata_get (name))
+	return printerdata:clone (_printerdata_get (name)) :init()
 end;
 
 
