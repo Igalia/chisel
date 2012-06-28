@@ -78,7 +78,7 @@ local table_keys = lib.ml.keys
 -- @param t A table.
 -- @return Table-list.
 --
-util.dir = lib.ml.keys
+util.dir = table_keys
 
 
 --
