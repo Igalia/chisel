@@ -23,6 +23,7 @@ local listdir  = fs.listdir
 local imap     = lib.ml.imap
 local ifilter  = lib.ml.ifilter
 local extend   = lib.ml.extend
+local callable = lib.ml.callable
 
 
 local function ppd_attribute (ppdname, attrname, optional)
@@ -130,8 +131,12 @@ local ppd_template = {
 		local result = {}
 		for k, opt in pairs (data.options) do
 			log_debug ("%s, %s, %s\n", k, opt, opt.ppd)
-			result[#result+1] = sprintf ("\n*%% options.%s", k)
-			result[#result+1] = opt:ppd ()
+			if callable (opt.ppd) then
+				result[#result+1] = sprintf ("\n*%% options.%s", k)
+				result[#result+1] = opt:ppd ()
+			else
+				result[#result+1] = sprintf ("\n*%% options.%s has no PPD equivalent", k)
+			end
 		end
 
 		return tconcat (result, "\n")
