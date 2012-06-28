@@ -35,7 +35,15 @@ options = {
 		"None";
 		"NoTumble";
 	};
-}
+
+	dot_distance = { default = 1.5      };
+	line_spacing = { default = "normal" };
+
+	-- The default "characters_per_line" and "lines_per_page" will be
+	-- calculated using the values for "dot_distance", "line_spacing"
+	-- and the size of the chosen paper -- Thus, they do not need to
+	-- be listed here.
+};
 
 -- Printing areas and margins for the supported paper sizes
 -- Paper size does not need to be specified for standard ones.
@@ -52,4 +60,4 @@ media = {
 	["110x170"] = { size={ 792; 1224 }; margins={ 18; 36; 775; 1188 } };
 	["115x110"] = { size={ 828;  792 }; margins={ 18; 36; 756;  774 } };
 	["A4TF"   ] = { size={ 594;  846 }; margins={ 18; 36; 576;  810 } };
-}
+};
