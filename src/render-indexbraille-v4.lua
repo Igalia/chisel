@@ -1,5 +1,5 @@
 ---
--- Index Braille (V4 protocol) device.
+-- Index Braille (V4 protocol) renderer.
 --
 -- @copyright 2012 Adrian Perez <aperez@igalia.com>
 -- @license Distributed under terms of the MIT license.
@@ -7,9 +7,9 @@
 
 local callable = lib.ml.callable
 local cset     = lib.charset
+local render   = lib.render
 local abs      = math.abs
 local pairs    = pairs
-
 
 --- Support functions
 -- @section dev_ibv4_support
@@ -49,21 +49,21 @@ local function value_for_closest_key (tab, value)
 end
 
 
---- Device implementation
--- @section dev_ibv4_device
+--- Renderer implementation
+-- @section dev_ibv4_renderer
 
---- Output device for Index Braille devices using the V4 protocol.
+--- Output renderer for Index Braille devices using the V4 protocol.
 --
--- Object derived from @{device}.
+-- Object derived from @{renderer}.
 --
 -- @table ibv4
 --
-local ibv4 = lib.device:extend ()
+local ibv4 = render.renderer:extend ()
 
---- Device name.
+--- Renderer name.
 ibv4.name = "indexbraille-v4"
 
---- Device description.
+--- Renderer description.
 ibv4.description = [[\
 Output to Index Braille embossers using version 4 of the protocol.
 ]]
@@ -75,8 +75,8 @@ Output to Index Braille embossers using version 4 of the protocol.
 -- escape sequence.
 --
 -- @param ... Format string and its arguments. Those are passed as-is
--- to `device:format`.
--- @return The device itself, to allow chaining commands.
+-- to `renderer:format`.
+-- @return The renderer itself, to allow chaining commands.
 --
 function ibv4:esc (...)
 	return self:write (cset.ESC):format (...):write (";")
@@ -118,7 +118,7 @@ function ibv4:line_spacing_option (value)
 end
 
 
---- Sends a number-of-copies option, but only if needed. The device supports
+--- Sends a number-of-copies option, but only if needed. The renderer supports
 -- specifying a number of copies *only if more than one copy is requested*.
 -- This means that requesting only one copy *must not* generate anything.
 -- Also, the maximum number of copies is `10.000`.

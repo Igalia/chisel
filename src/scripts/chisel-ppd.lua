@@ -6,24 +6,27 @@
 -- Distributed under terms of the MIT license.
 --
 
+local device = lib.device
+
+
 local function cmd_cat (device_id)
-  -- It is possible that the driver name is passed as a prefix. If that is
-  -- the case, remove it before calling printerdata.get()
+  -- It is possible that the *CUPS* driver name is passed as a prefix.
+  -- If that is the case, remove it before calling device.get()
   if device_id:sub (1, # "chisel-ppd:") == "chisel-ppd:" then
     device_id = device_id:sub (# "chisel-ppd:" + 1)
   end
-  io.write (lib.printerdata.get (device_id):ppd ())
+  io.write (device.get (device_id):ppd ())
 end
 
 
 local function cmd_list ()
-  local all = lib.printerdata.list ("*")
+  local all = device.list ("*")
   if chisel.options.plain then
     print (table.concat (all, "\n"))
   else
 	  local lfmt = '"chisel-ppd:%s" en "%s" "%s %s/chisel" "%s"'
 	  for _, item in ipairs (all) do
-	    local d = lib.printerdata.get (item)
+	    local d = device.get (item)
 	    print (lfmt:format (item,
 	                        d.manufacturer,
 	                        d.manufacturer,

@@ -8,7 +8,8 @@
 -- This is the main chisel filter program. Converst a chisel document
 -- tree to something that a particular embosser would understand.
 
-local get_device = lib.ml.safe (lib.device.get)
+local device = lib.device
+local get_device = lib.ml.safe (device.get)
 
 -- Check whether the process is running as a CUPS filter, and if a file
 -- name is given in argv[6], pick that as input file instead of stdin.
@@ -76,9 +77,9 @@ else
         os.remove (ppd_path)
       end
 
-      local output_mode = lib.printerdata.output_mode_from_ppd (ppd_text)
-      debug ("output mode (from CUPS-supplied PPD): %s\n", output_mode)
-      dev, err = get_device (output_mode)
+      local device_id = device.id_from_ppd (ppd_text)
+      debug ("device id (from CUPS-supplied PPD): %s\n", device_id)
+      dev, err = get_device (device_id)
       if dev == nil then
         debug ("coult not get device: %s (continuing...)\n", err)
       end
@@ -88,20 +89,19 @@ else
   -- Try to autodetect the connected device by inquiring CUPS.
   --
   if dev == nil and chisel.has_cups then
-    local device_id = lib.cups.get_device_id ()
-    debug ("device id (from CUPS): '%s'\n", device_id)
+    local ieee1284_id = lib.cups.get_device_id ()
+    debug ("IEEE1284 device id (from CUPS): '%s'\n", ieee1284_id)
 
-    if device_id ~= nil then
+    if ieee1284_id ~= nil then
       -- FIXME This is horribly ugly! We are traversing all supported devices
       -- for the solely purpose if checking whether one of them corresponds to
       -- the device id from CUPS!
       --
-      for _, devname in ipairs (lib.printerdata.list ("*")) do
-        local tmpdev
-        tmpdev, err = lib.printerdata.get (devname)
+      for _, devname in ipairs (device.list ("*")) do
+        local tmpdev, err = device.get (devname)
         if tmpdev ~= nil then
-          if tmpdev.ieee1284_id == device_id then
-            dev, err = get_device (tmpdev.output)
+          if tmpdev.ieee1284_id == ieee1284_id then
+            dev = tmpdev
             break
           end
         else
@@ -110,7 +110,7 @@ else
       end
 
       if dev == nil then
-        chisel.die ("Device with IEEE1284 ID '%s' is unsupported\n", device_id)
+        chisel.die ("Device with IEEE1284 ID '%s' is unsupported\n", ieee1284_id)
       end
     end
   end
@@ -128,10 +128,18 @@ end
 
 debug ("device: %s (%s)\n", dev, dev.name)
 
+rend, err = lib.render.renderer.get (dev.renderer)
+if rend == nil then
+  if chisel.loglevel == 0 then
+    chisel.die ("Could not create renderer '%s'\n", dev.renderer)
+  else
+    chisel.die ("Could not create renderer '%s'\n%s\n", dev.renderer, err)
+  end
+end
 
 doc, err = lib.loader.parse (input_file)
 if doc == nil then
-  if chisel.loglevel > 0 then
+  if chisel.loglevel == 0 then
     chisel.die ("Could not parse input document\n")
   else
     chisel.die ("Could not parse input document\n%s\n", err)
@@ -148,6 +156,7 @@ for name, value in pairs (options_overrides) do
   doc.options[name] = value
 end
 
+rend.device = dev
 -- Output document to the device
-doc:render (dev)
+doc:render (rend)
 
