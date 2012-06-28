@@ -379,8 +379,12 @@ local printerdata = object:extend
 	init = function (self)
 		log_debug ("printerdata:init: %s/%s\n", self.manufacturer, self.model)
 
+		self.default = {}
+
 		if self.options then
 			for k, v in pairs (self.options) do
+				log_debug ("printerdata:init: default %s = %s\n", k, v.default)
+				self.default[k] = v.default
 				local opt_init_func = self["_init_option_" .. k]
 				log_debug ("printerdata:_init_option_%s: %s\n", k, opt_init_func)
 				if opt_init_func then
