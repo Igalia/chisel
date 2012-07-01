@@ -5,8 +5,8 @@
 -- @license Distributed under terms of the MIT license.
 --
 
+local safe_require = lib.ml.safe (require)
 local io_write = io.write
-local require  = require
 local M = {}
 
 --- Base class for output rendering.
@@ -59,7 +59,7 @@ M.renderer = object:extend
 	-- @name device.get
 	--
 	get = function (name, writef)
-		local rend, err = require ("render-" .. name)
+		local rend, err = safe_require ("render-" .. name)
 		if rend then
       if writef ~= nil then
         rend.write = writef
