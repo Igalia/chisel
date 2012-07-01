@@ -435,11 +435,11 @@ local device = object:extend
 
   --- Instantiates a renderer suitable for sending data to the device.
   --
-  -- @return A @{render.renderer} instance.
+  -- @return A @{renderer} instance.
   -- @function device:create_renderer
   --
   create_renderer = function (self, writef)
-    local rend, err = lib.render.renderer.get (self.renderer, writef)
+    local rend, err = lib.renderer.get (self.renderer, writef)
     if rend ~= nil then
       rend.device = self
     end

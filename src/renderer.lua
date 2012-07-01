@@ -1,5 +1,5 @@
 ---
--- Output rendering utlities.
+-- Output rendering.
 --
 -- @copyright 2012 Adrian Perez <aperez@igalia.com>
 -- @license Distributed under terms of the MIT license.
@@ -7,7 +7,6 @@
 
 local safe_require = lib.ml.safe (require)
 local io_write = io.write
-local M = {}
 
 --- Base class for output rendering.
 --
@@ -19,7 +18,7 @@ local M = {}
 --
 -- @section renderer
 --
-M.renderer = object:extend
+local renderer = object:extend
 {
 	--- Writes data to the backend.
 	--
@@ -30,7 +29,7 @@ M.renderer = object:extend
 	--
 	-- @param data Data string to be written.
 	-- @return The renderer itself, to allow call-chaining.
-	-- @name renderer:write
+	-- @function renderer:write
 	--
 	write = function (self, data)
 		io_write (data)
@@ -45,7 +44,7 @@ M.renderer = object:extend
 	-- @param format Format string.
 	-- @param ... Format string arguments.
 	-- @return The renderer itself, to allow call-chaining.
-	-- @name device:format
+	-- @function renderer:format
 	--
 	format = function (self, format, ...)
 		return self:write (format:format (...))
@@ -56,7 +55,7 @@ M.renderer = object:extend
 	-- @param name Name of the output renderer, e.g. `indexbraille-v4`.
 	-- @param writef Write function. This can be used to override the
 	--               @{device:write} method used to output the data.
-	-- @name renderer.get
+	-- @function renderer.get
 	--
 	get = function (name, writef)
 		local rend, err = safe_require ("render-" .. name)
@@ -72,5 +71,5 @@ M.renderer = object:extend
 	end;
 }
 
-return M
+return renderer
 

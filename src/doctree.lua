@@ -34,14 +34,14 @@ M.element = object:extend
 	-- Arbitrary data payload. Usage depends on the subclass.
 	data = "";
 
-	--- Renders an element to a given output device.
+	--- Renders an element using a given output renderer.
 	--
 	-- Note that the base class does not implement it and will raise an error.
 	--
-	-- @param device Output @{device}.
+	-- @param renderer Output @{renderer}.
 	-- @function element:render
 	--
-	render = function (self, device)
+	render = function (self, renderer)
 		error ("unimplemented")
 	end;
 
@@ -136,7 +136,7 @@ M.element = object:extend
 	--
 	-- Helper function to walk a node, which calls an *enter function*,
 	-- then calls @{element:render} for each child (if any), and finally
-	-- calls and an *exit function* on the output device:
+	-- calls an *exit function* on the output renderer:
 	--
 	--  * The *enter function* has to be called
 	--    <code>begin_<em>name</em></code>.
@@ -147,26 +147,26 @@ M.element = object:extend
 	-- just arrange to call @{element:walk} with suitable parameters.
 	--
 	-- @param name Name used as suffix to derive the names of the
-	-- enter and exit function in the output device.
-	-- @param device Output device.
+	-- enter and exit function in the output renderer.
+	-- @param renderer Output renderer.
 	-- @function element:walk
 	--
-	walk = function (self, name, device)
-		local beginf = device["begin_" .. name]
-		local endf   = device["end_"   .. name]
+	walk = function (self, name, renderer)
+		local beginf = renderer["begin_" .. name]
+		local endf   = renderer["end_"   .. name]
 
 		if beginf ~= nil then
-			beginf (device, self)
+			beginf (renderer, self)
 		end
 
 		if self:has_children () then
 			for _, child in ipairs (self.children) do
-				child:render (device)
+				child:render (renderer)
 			end
 		end
 
 		if endf ~= nil then
-			endf (device, self)
+			endf (renderer, self)
 		end
 	end;
 }
@@ -185,10 +185,10 @@ M.element = object:extend
 M.document = M.element:extend
 {
 	--- Renders a document.
-	-- @param device Output @{device}.
+	-- @param renderer Output @{renderer}.
 	-- @function document:render
-	render = function (self, device)
-		self:walk ("document", device)
+	render = function (self, renderer)
+		self:walk ("document", renderer)
 	end;
 }
 
@@ -206,10 +206,10 @@ M.document = M.element:extend
 M.part = M.element:extend
 {
   --- Renders a part.
-  -- @param device Output @{device}.
+  -- @param renderer Output @{renderer}.
   -- @function part:render
-  render = function (self, device)
-    self:walk ("part", device)
+  render = function (self, renderer)
+    self:walk ("part", renderer)
   end;
 }
 
@@ -226,20 +226,20 @@ M.part = M.element:extend
 M.text = M.element:extend
 {
 	--- Renders text.
-	-- @param device Output @{device}.
+	-- @param renderer Output @{renderer}.
 	-- @function text:render
-	render = function (self, device)
-		self:walk ("text", device)
+	render = function (self, renderer)
+		self:walk ("text", renderer)
 	end;
 }
 
 
 --- Raw data element.
 --
--- Contains a blob of raw data, which will be sent as-is to the device.
--- Note that the contents of the `data` will be sent to the device if
--- the name of the output device specified in the `device` attribute
--- matches that of the final destination.
+-- Contains a blob of raw data, which will be sent as-is to the renderer.
+-- Note that the contents of the `data` will be sent to the renderer if
+-- the name specified in the `output` attribute matches that of the
+-- final destination.
 --
 -- **Attributes:**
 --
@@ -250,12 +250,12 @@ M.text = M.element:extend
 --
 M.raw = M.element:extend
 {
-	--- Reders raw data.
-	-- @param device Output @{device}.
+	--- Renders raw data.
+	-- @param renderer Output @{renderer}.
 	-- @function raw:render
-	render = function (self, device)
-		if self.device == device.name then
-			device:write (self.data)
+	render = function (self, renderer)
+		if self.device == renderer.name then
+			renderer:write (self.data)
 		end
 	end;
 }

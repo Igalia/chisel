@@ -6,8 +6,8 @@
 --
 
 local callable = lib.ml.callable
+local renderer = lib.renderer
 local cset     = lib.charset
-local render   = lib.render
 local abs      = math.abs
 local pairs    = pairs
 
@@ -50,7 +50,7 @@ end
 
 
 --- Renderer implementation
--- @section dev_ibv4_renderer
+-- @section ibv4_renderer
 
 --- Output renderer for Index Braille devices using the V4 protocol.
 --
@@ -58,7 +58,7 @@ end
 --
 -- @table ibv4
 --
-local ibv4 = render.renderer:extend ()
+local ibv4 = renderer:extend ()
 
 --- Renderer name.
 ibv4.name = "indexbraille-v4"
