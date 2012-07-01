@@ -105,13 +105,27 @@ Text elements contain strings to be embossed.
 
 Document tree element: `doctree.raw`
 
-    raw ("device-model", "raw data")
+    raw ("output-name", "raw data")
 
 Blob of raw data that is to be sent to the device as-is. The data will be
-sent only when the document is being sent to a particular *device-model*,
+sent only when the document is being sent to a particular *output*,
 and ignored for the rest of devices. **Using `raw()` is discouraged** as
 it violates the purpose of the document being device-independent, still
 it is provided as a way to do fine-grained control for particular devices.
+
+The *output* name may be:
+
+* A particular device identifier containing the manufacturer and model
+name, e.g. `indexbraille/basic-d`. Output will be done only to devices
+of that particular model.
+
+* A wildcard for a specific manufacturer, using `*` as the model name, e.g.
+`indexbraille/*`. Output will be sent to any device of the specified
+manufacturer.
+
+* The name of the output renderer being used, e.g. `indexbraille-v4`. Output
+will be sent to any device using that renderer, regardless of the particular
+manufacturer and model.
 
 <!-- vim: filetype=markdown spell spelllang=en
   -->

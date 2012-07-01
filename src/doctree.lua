@@ -9,6 +9,7 @@
 
 local M = {}
 local tinsert = table.insert
+local strsplit = lib.ml.split
 
 --- Base element.
 -- @section base_element
@@ -243,8 +244,17 @@ M.text = M.element:extend
 --
 -- **Attributes:**
 --
--- * `device`: Name of the device the raw data applies to.
--- * `data`: Raw data to be sent to the device.
+-- * `output`: Name of the output the raw data applies to. This may be
+-- either:
+--
+--   * The name of the renderer being used, e.g. "indexbraille-v4". This
+--   will match any device using the given renderer name.
+--   * The full name of the device, e.g. "indexbraille/basic-d". This will
+--   match only the particular device specified.
+--   * A wildcard specifying a manufacturer, e.g. "indexbraille/*". This
+--   will match any device from a particular manufacturer.
+--
+-- * `data`: Raw data to be sent to the renderer.
 --
 -- @table raw
 --
@@ -254,7 +264,24 @@ M.raw = M.element:extend
 	-- @param renderer Output @{renderer}.
 	-- @function raw:render
 	render = function (self, renderer)
-		if self.device == renderer.name then
+		local dev = strsplit (self.output, "/", 1)
+		local matched = false
+
+		if #dev == 1 then
+		  -- Could not split on the slash: match on renderer name.
+		  matched = self.output == renderer.name
+		elseif #dev == 2 then
+			-- Splitted on the slash: match on the device name.
+			if dev[2] == "*" then
+				-- Model is a wildcard: match on the manufacturer name.
+				local prefix = dev[1] .. "/"
+				matched = renderer.device.id:sub (1, #prefix) == prefix
+			else
+				-- Model is not a wildcard: match on the whole device name.
+				matched = self.output == renderer.device.id
+			end
+		end
+		if matched then
 			renderer:write (self.data)
 		end
 	end;

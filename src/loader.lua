@@ -98,8 +98,8 @@ function doc_funcs.options (t, relaxed)
 	return r
 end
 
-function doc_funcs.raw (device, data)
-	return T.raw:clone { device = device; data = data }
+function doc_funcs.raw (output, data)
+	return T.raw:clone { output = output; data = data }
 end
 
 --- Parses an input string into a document tree.
