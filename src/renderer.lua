@@ -50,6 +50,14 @@ local renderer = object:extend
 		return self:write (format:format (...))
 	end;
 
+	set_options = function (self, options)
+		log_debug ("renderer:set_options() unimplemented for '%s'\n", self.name)
+	end;
+
+	get_options = function (self)
+		log_debug ("renderer:get_options() unimplemented for '%s'\n", self.name)
+	end;
+
 	--- Gets a particular renderer given its name.
 	--
 	-- @param name Name of the output renderer, e.g. `indexbraille-v4`.

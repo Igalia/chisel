@@ -210,7 +210,9 @@ M.part = M.element:extend
   -- @param renderer Output @{renderer}.
   -- @function part:render
   render = function (self, renderer)
-    self:walk ("part", renderer)
+    local saved_options = renderer:get_options ()
+    self:walk ("part", renderer:set_options (self.options))
+    renderer:set_options (saved_options)
   end;
 }
 
