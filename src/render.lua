@@ -56,7 +56,7 @@ M.renderer = object:extend
 	-- @param name Name of the output renderer, e.g. `indexbraille-v4`.
 	-- @param writef Write function. This can be used to override the
 	--               @{device:write} method used to output the data.
-	-- @name device.get
+	-- @name renderer.get
 	--
 	get = function (name, writef)
 		local rend, err = safe_require ("render-" .. name)
