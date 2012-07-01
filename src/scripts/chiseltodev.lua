@@ -128,15 +128,6 @@ end
 
 log_debug ("device: %s (%s)\n", dev, dev.name)
 
-rend, err = lib.render.renderer.get (dev.renderer)
-if rend == nil then
-  if chisel.loglevel == 0 then
-    chisel.die ("Could not create renderer '%s'\n", dev.renderer)
-  else
-    chisel.die ("Could not create renderer '%s'\n%s\n", dev.renderer, err)
-  end
-end
-
 doc, err = lib.loader.parse (input_file)
 if doc == nil then
   if chisel.loglevel == 0 then
@@ -156,7 +147,6 @@ for name, value in pairs (options_overrides) do
   doc.options[name] = value
 end
 
-rend.device = dev
 -- Output document to the device
-doc:render (rend)
+doc:render (assert (dev:create_renderer ()))
 
