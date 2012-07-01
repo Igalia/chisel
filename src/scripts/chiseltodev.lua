@@ -67,7 +67,7 @@ else
     end
 
     if ppd_path then
-      debug ("scraping PPD file '%s'\n", ppd_path)
+      log_debug ("scraping PPD file '%s'\n", ppd_path)
 
       local ppd_file = assert (io.open (ppd_path, "rb"))
       ppd_text = ppd_file:read ("*a")
@@ -78,10 +78,10 @@ else
       end
 
       local device_id = device.id_from_ppd (ppd_text)
-      debug ("device id (from CUPS-supplied PPD): %s\n", device_id)
+      log_debug ("device id (from CUPS-supplied PPD): %s\n", device_id)
       dev, err = get_device (device_id)
       if dev == nil then
-        debug ("coult not get device: %s (continuing...)\n", err)
+        log_debug ("coult not get device: %s (continuing...)\n", err)
       end
     end
   end
@@ -90,7 +90,7 @@ else
   --
   if dev == nil and chisel.has_cups then
     local ieee1284_id = lib.cups.get_device_id ()
-    debug ("IEEE1284 device id (from CUPS): '%s'\n", ieee1284_id)
+    log_debug ("IEEE1284 device id (from CUPS): '%s'\n", ieee1284_id)
 
     if ieee1284_id ~= nil then
       -- FIXME This is horribly ugly! We are traversing all supported devices
@@ -105,7 +105,7 @@ else
             break
           end
         else
-          debug ("Error while getting data for '%s'\n", devname)
+          log_debug ("Error while getting data for '%s'\n", devname)
         end
       end
 
@@ -126,7 +126,7 @@ if dev == nil then
               " - Define the CHISEL_DEVICE environment variable.\n")
 end
 
-debug ("device: %s (%s)\n", dev, dev.name)
+log_debug ("device: %s (%s)\n", dev, dev.name)
 
 rend, err = lib.render.renderer.get (dev.renderer)
 if rend == nil then
