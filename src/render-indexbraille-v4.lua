@@ -5,11 +5,13 @@
 -- @license Distributed under terms of the MIT license.
 --
 
-local callable = lib.ml.callable
-local renderer = lib.renderer
-local cset     = lib.charset
-local abs      = math.abs
-local pairs    = pairs
+local intersect = lib.ml.intersect
+local callable  = lib.ml.callable
+local tupdate   = lib.ml.update
+local renderer  = lib.renderer
+local cset      = lib.charset
+local abs       = math.abs
+local pairs     = pairs
 
 --- Support functions
 -- @section dev_ibv4_support
@@ -194,6 +196,11 @@ function ibv4:begin_document (node)
 	-- track which combiation of driver/version generated the data stream.
 	self:esc ("DVchisel-v%s", chisel.version)
 
+	-- Set the initial options
+	if self.device.default ~= nil then
+		self:set_options (self.device.default)
+	end
+
 	-- Write commands needed to enable the requested options.
 	if node.options then
 		for option, value in pairs (node.options) do
@@ -209,6 +216,36 @@ end
 
 function ibv4:begin_text (node)
 	self:write (node.data)
+end
+
+
+function ibv4:set_options (options)
+	local changed_options
+	if self._options == nil then
+		changed_options = options
+	else
+		changed_options = intersect (self._options, options)
+	end
+
+	for option, value in ipairs (changed_options) do
+		-- Update the table tracking the current options
+		self._option[option] = value
+
+		-- Call the method which sets the option (if exists)
+		local method = self[option .. "_option"]
+		if callable (method) then
+			method (self, value)
+		else
+			log_debug ("%s: ignoring option %q\n", self.name, option)
+		end
+	end
+
+	return self
+end
+
+function ibv4:get_options ()
+	-- This returns a *copy* of the options table
+	return tupdate ({}, self._options)
 end
 
 return ibv4
