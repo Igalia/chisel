@@ -40,6 +40,14 @@ character cells left empty at the beginning of the line.
 
 * `top_margin`: Number of lines to leave empty at the top of each page.
 
+* `graphics_dot_distance`: Distance between dots, in millimeters, for
+embossing braille graphics fragments.
+
+* `graphics_line_spacing`: Spacing between lines, for embossing braille
+graphics fragments. Possible values are `"normal"` (or `"single"`, which has
+the same meaning), `"double"` or a numeric value, interpreted as the space
+between lines in millimeters.
+
 None of the options is mandatory. If not specified, the values used for
 those options are those considered as reasonable defaults for the output
 device in use.
@@ -100,6 +108,34 @@ Document tree element: `doctree.text`
     newlines]]
 
 Text elements contain strings to be embossed.
+
+### `graphics`
+
+Document tree element: `doctree.graphics`
+
+    graphics [[\
+    .L
+    ,
+    ?A
+    #'   -'
+    _  ;C @E'
+    W1;A    E'
+    _,B      :
+    ?>        <
+    _U---0----#---------0----0'
+    _    @    @2        _    @
+    W1         _       ,B
+    _           <      S
+    ?A          @5    S
+    #'           @3-9I
+    _
+    W1]]
+
+Graphics elements contain text intended to be embossed as graphics. When
+sending graphics to embossers, usually a finer `dot_distance` will be used,
+in order to render them with higher resolution. The `options` with the
+`graphics_*` prefix will be honored when handling this kind of element.
+
 
 ### `raw`
 

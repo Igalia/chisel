@@ -237,6 +237,28 @@ M.text = M.element:extend
 }
 
 
+--- Graphics element.
+--
+-- Contains a blob of plain text as data payload which are *meant to be
+-- embossed as graphics*. The payload is stored in the `data` attribute.
+-- Note that the fact that data is meant to be embossed as graphics means
+-- that renderers may treat the data differently from ordinary text, e.g.
+-- instructing embossers to use a higher resolution mode: Renderers would
+-- use the `graphics_*` set of options.
+--
+-- @table graphics
+--
+M.graphics = M.element:extend
+{
+  --- Renders text as braille graphics.
+  -- @param renderer Output @{renderer}.
+  -- @function graphics:render
+  render = function (self, renderer)
+    self:walk ("graphics", renderer)
+  end;
+}
+
+
 --- Raw data element.
 --
 -- Contains a blob of raw data, which will be sent as-is to the renderer.

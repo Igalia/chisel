@@ -24,6 +24,14 @@ function doc_funcs.text (t)
 	end
 end
 
+function doc_funcs.graphics (t)
+  if type (t) == "table" then
+    return T.graphics:clone { data = table.concat (t) }
+  else
+    return T.graphics:clone { data = tostring (t) }
+  end
+end
+
 function doc_funcs.document (t)
 	return T.document:clone { children = t }
 end
@@ -75,7 +83,11 @@ local doc_options = {
     end
     return value
   end;
+
+  -- Graphics dot distance
+  graphics_dot_distance = tonumber;
 }
+doc_options.graphics_line_spacing = doc_options.line_spacing
 
 
 function doc_funcs.options (t, relaxed)
