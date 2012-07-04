@@ -5,9 +5,9 @@
 -- @license Distributed under terms of the MIT license.
 --
 
+local deepcopy  = lib.util.deepcopy
 local intersect = lib.ml.intersect
 local callable  = lib.ml.callable
-local tupdate   = lib.ml.update
 local renderer  = lib.renderer
 local cset      = lib.charset
 local abs       = math.abs
@@ -245,7 +245,7 @@ end
 
 function ibv4:get_options ()
 	-- This returns a *copy* of the options table
-	return tupdate ({}, self._options)
+	return deepcopy (self._options)
 end
 
 return ibv4
