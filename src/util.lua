@@ -21,6 +21,26 @@ local table_keys = lib.ml.keys
 util.dir = table_keys
 
 
+--- Returns a deep copy of a value.
+--
+-- @param t Table to obtain a copy of.
+-- @return A copy of the table passed as arguments, with all sub-tables
+-- copies recursively.
+-- @function util.deepcopy
+--
+local function _deepcopy (t)
+  if type (t) == "table" then
+    local r = {}
+    for k, v in pairs (t) do
+      r[k] = _deepcopy (v)
+    end
+    return r
+  else
+    return t
+  end
+end
+util.deepcopy = _deepcopy
+
 --
 -- Pretty printer. This auxiliar table is used as jump-table indexed by the
 -- type name of the value that is to be pretty-printed.
