@@ -5,13 +5,15 @@
 -- @license Distributed under terms of the MIT license.
 --
 
-local deepcopy  = lib.util.deepcopy
-local intersect = lib.ml.intersect
-local callable  = lib.ml.callable
-local renderer  = lib.renderer
-local cset      = lib.charset
-local abs       = math.abs
-local pairs     = pairs
+local deepcopy = lib.util.deepcopy
+local callable = lib.ml.callable
+local tstring  = lib.ml.tstring
+local renderer = lib.renderer
+local cset     = lib.charset
+local abs      = math.abs
+local pairs    = pairs
+local error    = error
+
 
 --- Support functions
 -- @section dev_ibv4_support
@@ -48,6 +50,28 @@ local function value_for_closest_key (tab, value)
     value = closest
   end
   return value, code
+end
+
+
+--- Intersects two sets of device options, returning the changes.
+--
+-- @param old Table of *old* options (a.k.a. the currrent set of active
+-- options).
+-- @param new Table of *new* options. This table only needs to specify the
+-- options which are to be changed.
+-- @return Set of options to be changed: options present both in the old
+-- *and* the new set of options *with changed values*. Note that options
+-- for which the new value would be the same *will not* be in the result.
+-- @function intersect_options
+--
+local function intersect_options (old, new)
+  local diff = {}
+  for key, value in pairs (new) do
+    if old[key] ~= nil and old[key] ~= value then
+      diff[key] = value
+    end
+  end
+  return diff
 end
 
 
@@ -243,7 +267,7 @@ function ibv4:set_options (options)
 	if self._options == nil then
 		changed_options = options
 	else
-		changed_options = intersect (self._options, options)
+		changed_options = intersect_options (self._options, options)
 	end
 
 	for option, value in ipairs (changed_options) do
