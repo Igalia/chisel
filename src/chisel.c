@@ -330,9 +330,10 @@ lua_main (lua_State *L)
         repl (L);
     }
     else {
-        if (luaL_loadfile (L, g_repl ? NULL : g_script) != LUA_OK)
-            lua_error (L);
-        lua_call (L, 0, 0);
+        lua_pushcfunction (L, traceback);
+        if (luaL_loadfile (L, g_repl ? NULL : g_script) != LUA_OK ||
+            lua_pcall (L, 0, 0, -2) != LUA_OK)
+                lua_error (L);
     }
 
     return 0;
