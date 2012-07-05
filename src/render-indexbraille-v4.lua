@@ -266,16 +266,18 @@ end
 
 
 function ibv4:set_options (options)
+	log_debug ("ibv4:set_options(): %s\n", tstring (options))
 	local changed_options
 	if self._options == nil then
 		changed_options = options
+		self._options = {}
 	else
 		changed_options = intersect_options (self._options, options)
 	end
 
-	for option, value in ipairs (changed_options) do
+	for option, value in pairs (changed_options) do
 		-- Update the table tracking the current options
-		self._option[option] = value
+		self._options[option] = value
 
 		-- Call the method which sets the option (if exists)
 		local method = self[option .. "_option"]
