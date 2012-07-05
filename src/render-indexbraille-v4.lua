@@ -34,6 +34,9 @@ local line_spacings = {
   [10.0] = 100; -- 10.0mm line spacing (double spacing).
 }
 
+
+--- Supported line spacing distance names.
+--
 local line_spacings_by_name = { single = 5.0; double = 10.0 }
 
 
