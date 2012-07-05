@@ -36,8 +36,25 @@ options = {
 		"NoTumble";
 	};
 
-	dot_distance = { default = 1.5      };
-	line_spacing = { default = "normal" };
+	dot_distance = {
+	  default = 2.0;
+	  2.0; 2.5; 1.6; -- Supported dot distances
+	};
+
+	line_spacing = {
+	  default = "single";
+	  "single";
+	  "double";
+	};
+
+  graphics_dot_distance = {
+    default = 1.6;
+	  2.0; 2.5; 1.6; -- Same as for "dot_distance"
+  };
+
+  graphics_line_spacing = {
+    default = "single";
+  };
 
 	-- The default "characters_per_line" and "lines_per_page" will be
 	-- calculated using the values for "dot_distance", "line_spacing"
