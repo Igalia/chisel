@@ -219,6 +219,25 @@ function ibv4:begin_text (node)
 end
 
 
+function ibv4:begin_graphics (node)
+  local old_options = self:get_options ()
+  local gfx_options = {}
+
+  -- Modify the "graphics_*" options only
+  for key, value in pairs (old_options) do
+    if key:sub (1, #"graphics_") == "graphics_" then
+      gfx_options[key:sub (#"graphics_" + 1)] = value
+    end
+  end
+
+  -- Temporarily enable the graphics options, send out the
+  -- graphics data, and the restore the saved options.
+  self:set_options (gfx_options)
+  self:write (node.data)
+  self:set_options (old_options)
+end
+
+
 function ibv4:set_options (options)
 	local changed_options
 	if self._options == nil then
