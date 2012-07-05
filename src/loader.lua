@@ -38,7 +38,7 @@ end
 
 function doc_funcs.part (options)
   return function (t)
-    return T.part:clone { options = options, children = t }
+    return T.part:clone { options = doc_funcs.options (options), children = t }
   end
 end
 
