@@ -10,15 +10,24 @@
 -- @license Distributed under terms of the MIT license.
 --
 
-local callable = lib.ml.callable
+local callable     = lib.ml.callable
+local setmetatable = setmetatable
+local tconcat      = table.concat
+local mfloor       = math.floor
+local tonumber     = tonumber
+local tostring     = tostring
+local pairs        = pairs
+local pcall, load  = pcall, load
+local loadfile     = loadfile
+local error        = error
+local T            = lib.doctree
 
-local T = lib.doctree
 local M = {}
 local doc_funcs = {}
 
 function doc_funcs.text (t)
 	if type (t) == "table" then
-		return T.text:clone { data = table.concat (t) }
+		return T.text:clone { data = tconcat (t) }
 	else
 		return T.text:clone { data = tostring (t) }
 	end
@@ -26,7 +35,7 @@ end
 
 function doc_funcs.graphics (t)
   if type (t) == "table" then
-    return T.graphics:clone { data = table.concat (t) }
+    return T.graphics:clone { data = tconcat (t) }
   else
     return T.graphics:clone { data = tostring (t) }
   end
@@ -45,7 +54,7 @@ end
 
 local function tointeger (value)
   local number  = tonumber (value)
-  local rounded = math.floor (number)
+  local rounded = mfloor (number)
   if number ~= rounded then
     error (("Number '%s' is not an integer"):format (value))
   end
