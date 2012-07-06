@@ -12,6 +12,7 @@
 
 local sprintf  = string.format
 local tconcat  = table.concat
+local mfloor   = math.floor
 local loadfile = loadfile
 local tostring = tostring
 local ipairs   = ipairs
@@ -444,6 +445,94 @@ local device = object:extend
       rend.device = self
     end
     return rend, err
+  end;
+
+
+  --- Obtains supported media information.
+  --
+  -- @param name Name of the media, e.g. `"Letter"`, `"A4"`, or any other
+  -- device-specific format listed in the `media` attribute.
+  -- @return Table containing information about the media, or `nil` if the
+  -- requested media does is not supported by the device.
+  -- @function device:get_media_info
+  --
+  get_media_info = function (self, name)
+    if self.media[name] == nil then
+      return nil
+    end
+
+    local margins = self.media[name].margins
+    assert (margins ~= nil)
+
+    local mediasize = self.media[name].size or builtin_media[name].size
+    assert (mediasize ~= nil)
+
+    return {
+      name          = name;
+      width         = mediasize[1];
+      height        = mediasize[2];
+      top_margin    = margins[1];
+      left_margin   = margins[2];
+      right_margin  = margins[3];
+      bottom_margin = margins[4];
+    }
+  end;
+
+  --- Calculate text area.
+  --
+  -- @param dot_distance
+  -- @param line_spacing
+  -- @param pagesize
+  -- @return Lines-per-page and characters-per-line (both numbers)
+  -- @function device:calculate_text_area
+  --
+  calculate_text_area = function (self, dot_distance, line_spacing, pagesize)
+    -- Pick defaults if needed
+    dot_distance = dot_distance or self.default.dot_distance
+    line_spacing = line_spacing or self.default.line_spacing
+    pagesize = pagesize or self.default.pagesize
+
+    -- Line spacing may be a string: ensure it is a numeric value.
+    if type (line_spacing) == "string" then
+      line_spacing = self.options.line_spacing[line_spacing]
+    end
+    assert (tonumber (line_spacing))
+
+    -- Dot distance may be a string: ensure it is a numeric value.
+    if type (dot_distance) == "string" then
+      dot_distance = self.options.dot_distance[dot_distance]
+    end
+    assert (tonumber (dot_distance))
+
+    -- The given page_size may be a string, in that case pick the actual
+    -- dimensions from the list of supported media.
+    if type (pagesize) == "string" then
+      pagesize = self:get_media_info (pagesize)
+    end
+
+    local h = pagesize.bottom_margin - pagesize.top_margin
+    local w = pagesize.right_margin - pagesize.left_margin
+
+    -- Braille cell:
+    --
+    --   dot_distance
+    --    __|_  __|_
+    --   /    \/    \
+    --   ***   ***   ··· \
+    --   ***   ***   ··· |__ dot_distance
+    --                   /
+    --   ***   ***   ··· \
+    --   ***   ***   ··· |    width  = dot_distance * 2
+    --                   /    htight = dot_distance * 3
+    --   ***   ***   ··· \
+    --   ***   ***   ··· |
+    --                   /
+    --   ···   ···   ···
+    --   ···   ···   ···
+
+    local lines_per_page = mfloor (h / (dot_distance * 3 + line_spacing))
+    local characters_per_line = mfloor (w / (dot_distance * 2))
+    return lines_per_page, characters_per_line
   end;
 }
 
