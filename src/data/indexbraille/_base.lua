@@ -45,6 +45,9 @@ options = {
 	  default = "single";
 	  "single";
 	  "double";
+	  -- Numeric translations of the values above.
+	  single =  5.0;
+	  double = 10.0;
 	};
 
   graphics_dot_distance = {
@@ -54,6 +57,11 @@ options = {
 
   graphics_line_spacing = {
     default = "single";
+    "single";
+    "double";
+    -- Numeric translations of the values above
+    single =  5.0;
+    double = 10.0;
   };
 
 	-- The default "characters_per_line" and "lines_per_page" will be
