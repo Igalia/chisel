@@ -260,7 +260,9 @@ function ibv4:begin_graphics (node)
   -- Temporarily enable the graphics options, send out the
   -- graphics data, and the restore the saved options.
   self:set_options (gfx_options)
-  self:write (node.data)
+  self:write (cset.ESC):write ("\001") -- 0x1B 0x01 - begin 6-dot graphics.
+  self:write (node.data)               -- Write graphics data payload.
+  self:write (cset.ESC):write ("\002") -- 0x1B 0x02 - end 6-dot graphics.
   self:set_options (old_options)
 end
 
