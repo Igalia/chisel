@@ -401,6 +401,14 @@ local device = object:extend
 				calculate_iarea_and_paperdim (self.options.pagesize, self.media)
 		end
 
+		local lpp, cpl = self:calculate_text_area ()
+		if self.default.lines_per_page == nil then
+			self.default.lines_per_page = lpp
+		end
+		if self.default.characters_per_line == nil then
+			self.default.characters_per_line = cpl
+		end
+
 		return self
 	end;
 
