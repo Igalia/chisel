@@ -37,7 +37,7 @@ options = {
 	};
 
 	dot_distance = {
-	  default = 2.0;
+	  default = 2.5;
 	  2.0; 2.5; 1.6; -- Supported dot distances
 	};
 
