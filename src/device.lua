@@ -25,6 +25,7 @@ local imap     = lib.ml.imap
 local ifilter  = lib.ml.ifilter
 local extend   = lib.ml.extend
 local callable = lib.ml.callable
+local rupdate  = lib.util.rupdate
 
 
 local function ppd_attribute (ppdname, attrname, optional)
@@ -284,11 +285,9 @@ local function _device_get (name)
 		end
 	end
 
-	-- TODO Make merging of items better using recursive merge.
-	for k, v in pairs (data) do
-		base[k] = v
-	end
-
+	-- TODO Merging of items works recursively, but array-tables may not
+	--      behave as expected. Beware, dragons ahead.
+	rupdate (base, data)
 	base.id = name
 	return base
 end
