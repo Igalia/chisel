@@ -62,6 +62,29 @@ end
 util.rupdate = _rupdate
 
 
+--- How many millimeters long is one PostScript Default Unit (1/72in).
+local u_to_mm_ratio = 0.352777778
+
+--- Converts PostScript Default Units to millimeters.
+--
+-- @param value Numeric value in PostScript Default Units (1u = 1/72in).
+-- @return Value converted to millimeters.
+-- @function util.u_to_mm
+--
+function util.u_to_mm (value)
+  return value * u_to_mm_ratio
+end
+
+--- Convers millimeters to PostScript Default Units.
+--
+-- @param value Numeric value in millimeters.
+-- @return Value converted to PostScript Default Units (1u = 1/72in).
+-- @function util.mm_to_u
+--
+function util.mm_to_u (value)
+  return value / u_to_mm_ratio
+end
+
 --
 -- Pretty printer. This auxiliar table is used as jump-table indexed by the
 -- type name of the value that is to be pretty-printed.
