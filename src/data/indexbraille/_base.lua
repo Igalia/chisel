@@ -68,6 +68,13 @@ options = {
 	-- calculated using the values for "dot_distance", "line_spacing"
 	-- and the size of the chosen paper -- Thus, they do not need to
 	-- be listed here.
+	characters_per_line = {
+		minimum = 1;
+		maximum = 48;
+	};
+	lines_per_page = {
+		minimum = 1;
+	};
 };
 
 -- Printing areas and margins for the supported paper sizes

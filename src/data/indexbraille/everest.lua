@@ -10,3 +10,9 @@ base        = "indexbraille/_base"
 model       = "Everest"
 ieee1284_id = "MFG:Index Braille AB; MDL:Everest;"
 
+options = {
+  characters_per_line = {
+    maximum = 47;
+  };
+};
+
