@@ -41,6 +41,27 @@ local function _deepcopy (t)
 end
 util.deepcopy = _deepcopy
 
+
+--- Updates a table recursively with the contents of another table.
+--
+-- @param dst Destination table.
+-- @param src Source table.
+-- @return Destination table.
+-- @function util.rupdate
+--
+local function _rupdate (dst, src)
+  if type (dst) == "table" and type (src) == "table" then
+    for k, v in pairs (src) do
+      dst[k] = _rupdate (dst[k], v)
+    end
+    return dst
+  else
+    return _deepcopy (src)
+  end
+end
+util.rupdate = _rupdate
+
+
 --
 -- Pretty printer. This auxiliar table is used as jump-table indexed by the
 -- type name of the value that is to be pretty-printed.
