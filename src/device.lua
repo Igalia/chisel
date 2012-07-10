@@ -26,6 +26,7 @@ local ifilter  = lib.ml.ifilter
 local extend   = lib.ml.extend
 local callable = lib.ml.callable
 local rupdate  = lib.util.rupdate
+local u_to_mm  = lib.util.u_to_mm
 
 
 local function ppd_attribute (ppdname, attrname, optional)
@@ -485,10 +486,11 @@ local device = object:extend
   -- @return Lines-per-page and characters-per-line (both numbers)
   -- @function device:calculate_text_area
   --
-  calculate_text_area = function (self, dot_distance, line_spacing, pagesize)
+  calculate_text_area = function (self, dot_distance, line_spacing, cell_spacing, pagesize)
     -- Pick defaults if needed
     dot_distance = dot_distance or self.default.dot_distance
     line_spacing = line_spacing or self.default.line_spacing
+    cell_spacing = cell_spacing or self.default.cell_spacing
     pagesize = pagesize or self.default.pagesize
 
     -- Line spacing may be a string: ensure it is a numeric value.
@@ -509,28 +511,29 @@ local device = object:extend
       pagesize = self:get_media_info (pagesize)
     end
 
-    local h = pagesize.bottom_margin - pagesize.top_margin
-    local w = pagesize.right_margin - pagesize.left_margin
+    -- XXX Sizes in data files are in PostScript Default Units, convert.
+    local h = u_to_mm (pagesize.bottom_margin - pagesize.top_margin)
+    local w = u_to_mm (pagesize.right_margin - pagesize.left_margin)
 
-    -- Braille cell:
     --
-    --   dot_distance
-    --    __|_  __|_
-    --   /    \/    \
-    --   ***   ***   ··· \
-    --   ***   ***   ··· |__ dot_distance
-    --                   /
-    --   ***   ***   ··· \
-    --   ***   ***   ··· |    width  = dot_distance * 2
-    --                   /    htight = dot_distance * 3
-    --   ***   ***   ··· \
-    --   ***   ***   ··· |
-    --                   /
-    --   ···   ···   ···
-    --   ···   ···   ···
+    --  dot_distance        |  cell_w = 1 * dot_distance + cell_spacing
+    --   |                  |  cell_h = 2 * dot_distance + line_spacing
+    --   | cell_spacing
+    --   |  |
+    --   /\/\
+    --  .____.
+    --  |**  |\__ dot_distance
+    --  |**  |/
+    --  |**  |
+    --  |    |\__ line_spacing
+    --  |____|/
+    --
 
-    local lines_per_page = mfloor (h / (dot_distance * 3 + line_spacing))
-    local characters_per_line = mfloor (w / (dot_distance * 2))
+    local cell_w = 1 * dot_distance + cell_spacing
+    local cell_h = 2 * dot_distance + line_spacing
+
+    local characters_per_line = mfloor (w / cell_w)
+    local lines_per_page = mfloor (h / cell_h)
     return lines_per_page, characters_per_line
   end;
 }
