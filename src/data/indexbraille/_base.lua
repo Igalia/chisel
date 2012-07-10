@@ -50,6 +50,11 @@ options = {
 	  double = 10.0;
 	};
 
+	cell_spacing = {
+		default = 3.5;
+		3.5;
+	};
+
   graphics_dot_distance = {
     default = 1.6;
 	  2.0; 2.5; 1.6; -- Same as for "dot_distance"
