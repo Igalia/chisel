@@ -84,6 +84,10 @@ options = {
 
 -- Printing areas and margins for the supported paper sizes
 -- Paper size does not need to be specified for standard ones.
+--
+-- XXX Note that those are written in PostScript Default Units,
+--     like sizes in PPD files. One unit is 1/72 inches.
+--
 media = {
 	Letter = { margins={ 18; 36; 594;         756        } };
 	Legal  = { margins={ 18; 36; 594;         972        } };
