@@ -231,14 +231,8 @@ function ibv4:begin_document (node)
 
 	-- Write commands needed to enable the requested options.
 	if node.options then
-		for option, value in pairs (node.options) do
-			local method = self[option .. "_option"]
-			if callable (method) then
-				method (self, value)
-			else
-				log_debug ("%s: Ignoring option %q\n", self.name, option)
-			end
-		end
+		log_debug ("%s:begin_document setting document options\n", self.name)
+		self:set_options (node.options)
 	end
 end
 
