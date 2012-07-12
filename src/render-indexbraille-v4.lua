@@ -225,6 +225,7 @@ function ibv4:begin_document (node)
 
 	-- Set the initial options
 	if self.device.default ~= nil then
+		log_debug ("%s:begin_document resetting to default options\n", self.name)
 		self:set_options (self.device.default)
 	end
 
@@ -240,6 +241,17 @@ function ibv4:begin_document (node)
 		end
 	end
 end
+
+
+function ibv4:end_document (node)
+	-- Also, reset the device to the default options at the end of
+	-- the document, to leave it in a well-known state.
+	if self.device.default ~= nil then
+		log_debug ("%s:end_document resetting to default options\n", self.name)
+		self:set_options (self.device.default)
+	end
+end
+
 
 function ibv4:begin_text (node)
 	self:write (node.data)
