@@ -1,8 +1,16 @@
 #!chisel
 options {
+  -- Number of lines and columns to be embossed in each page.
+  lines_per_page      = 23;
+  characters_per_line = 30;
+
+  -- Dot distance of 2.5mm is the standard for Braille text.
   dot_distance = 2.5;
+
+   -- Actual selected dot_distance is rounded to the closest value
+   -- supported by the output device, so using zero rounds to the
+   -- smallest one available (so is the same as maximum resolution)
   graphics_dot_distance = 1;
-  graphics_line_spacing = 1;
 }
 document {
   text "Math is hard!";
