@@ -24,14 +24,22 @@ local function cmd_list ()
   if chisel.options.plain then
     print (table.concat (all, "\n"))
   else
-	  local lfmt = '"chisel-ppd:%s" en "%s" "%s %s/chisel" "%s"'
-	  for _, item in ipairs (all) do
-	    local d = device.get (item)
-	    print (lfmt:format (item,
-	                        d.manufacturer,
-	                        d.manufacturer,
-	                        d.model,
-	                        d.ieee1284_id))
+    if chisel.options.simple then
+      local lfmt = "%-26s %s %s"
+      for _, item in ipairs (all) do
+        local d = device.get (item)
+        print (lfmt:format (item, d.manufacturer, d.model))
+      end
+    else
+  	  local lfmt = '"chisel-ppd:%s" en "%s" "%s %s/chisel" "%s"'
+	    for _, item in ipairs (all) do
+	      local d = device.get (item)
+	      print (lfmt:format (item,
+	                          d.manufacturer,
+	                          d.manufacturer,
+	                          d.model,
+	                          d.ieee1284_id))
+      end
     end
 	end
 end
