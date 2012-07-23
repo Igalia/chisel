@@ -5,8 +5,21 @@
 -- Distributed under terms of the MIT license.
 --
 
--- This is the main chisel filter program. Converst a chisel document
+-- This is the main chisel filter program. Converts a chisel document
 -- tree to something that a particular embosser would understand.
+
+if chisel.options["--help"] then
+  print [[
+Usage: chiseltodev [device=id] < input.chsl > output.raw
+
+Converts a Chisel document to a data stream mixing text and commands
+suitable for sending to a particular embosser device. The device can
+be specified as a command line argument, or alternatively by defining
+the CHISEL_DEVICE environment variable.
+  ]]
+  return
+end
+
 
 local device = lib.device
 local get_device = lib.ml.safe (device.get)

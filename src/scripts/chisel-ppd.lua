@@ -59,7 +59,7 @@ local cmds = {
 }
 
 
-if #chisel.argv == 0 or chisel.argv[1] == "help" then
+if #chisel.argv == 0 or chisel.argv[1] == "help" or chisel.options["--help"] then
 	io.stderr:write ("Usage:\n")
 	for name, cmd in pairs (cmds) do
 		io.stderr:write ((" chisel-ppd %s\n"):format (cmd.synopsis))

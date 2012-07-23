@@ -9,6 +9,17 @@ local validate_options = lib.ml.safe (lib.loader.validate_options)
 local optionformatq = "    %s = %q;"
 local optionformats = "    %s = %s;"
 
+if chisel.options["--help"] then
+  print [[
+Usage: texttochisel [option=value...] < input.txt > output.chsl
+
+Any options eligible to be used in the "options" section of a
+Chisel document can be used. Please refer to the documentation
+for their reference.
+]]
+return
+end
+
 -- Check whether the process is running as a CUPS filter, and if a file
 -- name is given in argv[6], pick that as input file instead of stdin.
 --

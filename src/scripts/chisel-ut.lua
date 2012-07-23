@@ -5,6 +5,15 @@
 -- Distributed under terms of the MIT license.
 --
 
+if chisel.options["--help"] then
+  print [=[
+Usage: chisel-ut file1.lua [file2.lua [... fileN.lua]]
+
+Runs the given Lua source files as unit tests.
+]=]
+  return
+end
+
 local lunit = lib.lunit
 
 for _, filename in ipairs (chisel.argv) do
