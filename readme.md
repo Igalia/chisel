@@ -20,7 +20,7 @@ step, to perform installation in an alternative file system root.
 
 ### Obtaining information
 
-The following command can be used to list the available devices:
+The following command can be used to list the supported devices:
 
     chisel -S chisel-ppd list simple
 
