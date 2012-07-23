@@ -13,7 +13,9 @@ File system utilities.
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/dir.h>
+#include <libgen.h>
 #include <unistd.h>
+#include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include <errno.h>
@@ -161,6 +163,42 @@ fs_isdir (lua_State *L)
 }
 
 
+/***
+Returns the path up to the last directory separator.
+
+@param path Path string.
+@function basename
+*/
+static int
+fs_basename (lua_State *L)
+{
+    char *path;
+    assert (L);
+    path = strdup (luaL_checkstring (L, 1));
+    lua_pushstring (L, basename (path));
+    free (path);
+    return 1;
+}
+
+
+/***
+Returns the file name component after the last directory separator.
+
+@param path Path string.
+@function dirname
+*/
+static int
+fs_dirname (lua_State *L)
+{
+    char *path;
+    assert (L);
+    path = strdup (luaL_checkstring (L, 1));
+    lua_pushstring (L, dirname (path));
+    free (path);
+    return 1;
+}
+
+
 static const luaL_Reg fs_funcs[] =
 {
 #define REG_ITEM(_name)  { #_name, fs_ ## _name }
@@ -168,6 +206,8 @@ static const luaL_Reg fs_funcs[] =
     REG_ITEM (exists),
     REG_ITEM (symlink),
     REG_ITEM (isdir),
+    REG_ITEM (basename),
+    REG_ITEM (dirname),
 #undef REG_ITEM
     { NULL, NULL }
 };
