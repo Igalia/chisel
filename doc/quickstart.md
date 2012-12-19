@@ -21,16 +21,16 @@ Your distribution may provide all of the packages you need. If this is not
 the case, or if you would like to install a more recent version of Chisel,
 you should do the following:
 
-a. Install CUPS if it is not already installed.
-b. Obtain, compile and install the Chisel code.
-c. Get the appropriate PPD file for your braille device.
+1. Install CUPS if it is not already installed.
+2. Obtain, compile and install the Chisel code.
+3. Get the appropriate PPD file for your braille device.
 
 For instance, in the case of an Index Basic-D in an Ubuntu environment,
 you would do the following:
 
-a. `git clone git://github.com/Igalia/chisel.git`
-b. `cd chisel && make && sudo make install`
-c. `chisel -S chisel-ppd cat indexbraille/basic-d > basic-d.ppd`
+1. `git clone git://github.com/Igalia/chisel.git`
+2. `cd chisel && make && sudo make install`
+3. `chisel -S chisel-ppd cat indexbraille/basic-d > basic-d.ppd`
 
 Please see the Chisel `readme.md` for additional options.
 
@@ -40,11 +40,11 @@ Having installed the CUPS filters and PPD file, you can now install your
 embosser as you would any other CUPS-compatible printer. For instance, to
 install your embosser as a local device:
 
-a. Connect your embosser via USB
-b. Go to the CUPS administration page: http://localhost:631/
-c. Go to Administration and select “Add Printer”
-d. Select your embosser and fill in the requested information (name, location, etc)
-e. Select the PPD file created in Step 0.
+1. Connect your embosser via USB
+2. Go to the CUPS administration page: http://localhost:631/
+3. Go to Administration and select “Add Printer”
+4. Select your embosser and fill in the requested information (name, location, etc)
+5. Select the PPD file created in Step 0.
 
 Tip: In the case of a local installation, be sure that the file
 `/etc/cups/client.conf` has `"ServerName localhost"` and not
@@ -74,11 +74,11 @@ embosser attributes, including:
 Having obtained Dots with Chisel support, you can easily create and emboss
 documents as follows:
 
-a. Launch Dots
-b. Go to *File* → *New* to create a new document
-c. Write the text you want
-d. Go to *Translation* → *Convert* to translate the text
-e. Go to *File* → *Print* and select the Index-Braille embosser
+1. Launch Dots
+2. Go to *File* → *New* to create a new document
+3. Write the text you want
+4. Go to *Translation* → *Convert* to translate the text
+5. Go to *File* → *Print* and select the Index-Braille embosser
 
 <!-- vim: filetype=markdown spell spelllang=en
   -->
