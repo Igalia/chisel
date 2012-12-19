@@ -33,6 +33,19 @@ to the following command:
 
     chisel -S chisel-ppd cat device-id > file.ppd
 
+
+### Translate a text document to chisel document format
+
+The following command can be used to convert a text file to a file in
+the [Chisel device-independent document format]:
+
+    chisel -S texttochisel < input.txt > output.chsl
+
+This is a basic tool, and doesn't touch any options, but can be useful
+as a starting point. You can manually edit the resulting document
+output.chsl to configure the needed options (see docformat.md.html for
+the available configurable options).
+
 ### Rendering a document
 
 Provided that a file is already in the [Chisel device-independent
