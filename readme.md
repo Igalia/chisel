@@ -43,8 +43,11 @@ the [Chisel device-independent document format]:
 
 This is a basic tool, and doesn't touch any options, but can be useful
 as a starting point. You can manually edit the resulting document
-output.chsl to configure the needed options (see docformat.md.html for
-the available configurable options).
+`output.chsl` to configure the needed options (see `docformat.md` for
+the available configurable options). It is also possible to pass
+document-global options as command line arguments:
+
+    chisel -S texttochisel copies=5 < input.txt > output.chsl
 
 ### Rendering a document
 
