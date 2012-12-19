@@ -1,0 +1,37 @@
+#!chisel
+options {
+  -- Number of lines and columns to be embossed in each page.
+  lines_per_page      = 23;
+  characters_per_line = 30;
+
+  -- Dot distance of 2.5mm is the standard for Braille text.
+  dot_distance = 2.5;
+
+   -- Actual selected dot_distance is rounded to the closest value
+   -- supported by the output device, so using zero rounds to the
+   -- smallest one available (so is the same as maximum resolution)
+  graphics_dot_distance = 1;
+}
+document {
+
+ text "Before:\nThis is a test to see if the document will be screwed up after a graphic. This text should wrap and end after 34 chars, give or take.";
+
+ graphics [[====================
+=                  =
+=                  =
+=                  =
+=                  =
+====================]];
+
+ text "After:\nThis is a test to see if the document will be screwed up after a graphic. This text should wrap and end after 34 chars, give or take.";
+
+ graphics [[====================
+=                  =
+=                  =
+=                  =
+=                  =
+====================]];
+
+ text "After:\nThis is a test to see if the document will be screwed up after a graphic. This text should wrap and end after 34 chars, give or take.";
+
+}

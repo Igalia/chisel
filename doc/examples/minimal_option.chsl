@@ -1,0 +1,12 @@
+#!chisel
+
+--- A miminal Chisel document, containing only some text and one option
+
+options {
+  characters_per_line = 30;
+}
+
+document {
+	text "Hello, world\n"
+}
+
